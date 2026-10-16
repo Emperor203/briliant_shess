@@ -30,14 +30,19 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="flex items-center gap-3">
         <img
           src="/logo.jpg"
-          alt="Бриллиантовые Шахматы"
-          className="h-10 w-10 rounded-xl object-cover shadow-lg shadow-cyan-950/60 ring-2 ring-amber-400/40"
+          alt="Brilliant Chess"
+          className="h-11 w-11 rounded-xl object-cover shadow-lg shadow-amber-950/40 ring-2 ring-amber-400/50 hover:scale-105 transition-transform"
         />
-        <div>
-          <h1 className="text-base font-bold tracking-tight text-white m-0">
-            Бриллиантовые Шахматы
+        <div className="flex flex-col justify-center">
+          <h1
+            className="text-2xl font-bold tracking-wide m-0 bg-gradient-to-r from-amber-200 via-amber-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-sm select-none"
+            style={{ fontFamily: "'Dancing Script', 'Caveat', cursive" }}
+          >
+            Brilliant Chess
           </h1>
-          <p className="text-[11px] text-amber-300/80 font-medium m-0">Stockfish AI & 3D Анализ</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold m-0 -mt-0.5">
+            Бриллиантовые Шахматы • AI & 3D
+          </p>
         </div>
       </div>
 
