@@ -1,4 +1,4 @@
-# ♟️ Antigravity Chess AI — 2D/3D Interactive Chess Web App
+# 💎 Бриллиант (Brilliant Chess) — 2D/3D Interactive Chess Web App
 
 Интерактивное шахматное веб-приложение нового поколения с ИИ-ботом Stockfish, анализом ходов в реальном времени, 2D/3D режимами доски и бейджами качества ходов в стиле Chess.com.
 

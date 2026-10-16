@@ -28,12 +28,15 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 bg-slate-900/90 px-4 py-3 backdrop-blur-md">
       {/* Brand */}
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-500 shadow-lg shadow-cyan-950/50">
-          <span className="text-xl">♞</span>
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 shadow-lg shadow-cyan-950/60 ring-1 ring-cyan-400/30">
+          <span className="text-xl">💎</span>
         </div>
         <div>
-          <h1 className="text-base font-bold tracking-tight text-white m-0">Antigravity Chess</h1>
-          <p className="text-[11px] text-slate-400 m-0">Stockfish AI & 3D Real-time Engine</p>
+          <h1 className="text-base font-bold tracking-tight text-white m-0 flex items-center gap-1.5">
+            <span>Бриллиант</span>
+            <span className="text-xs text-cyan-400 font-semibold tracking-normal">Chess</span>
+          </h1>
+          <p className="text-[11px] text-slate-400 m-0">Stockfish AI & 3D Анализ</p>
         </div>
       </div>
 
