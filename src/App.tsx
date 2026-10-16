@@ -1,0 +1,662 @@
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Chess } from 'chess.js';
+import type { Square } from 'chess.js';
+import { Chessboard2D } from './components/Chess2D/Chessboard2D';
+import { Chessboard3D } from './components/Chess3D/Chessboard3D';
+import { EvaluationBar } from './components/EvaluationBar';
+import { MoveHistory } from './components/MoveHistory';
+import { PlayerCard } from './components/PlayerCard';
+import { Navbar } from './components/Navbar';
+import { SettingsModal } from './components/SettingsModal';
+import { FenPgnModal } from './components/FenPgnModal';
+import { GameOverModal } from './components/GameOverModal';
+import type { GameSettings, MoveAnalysis, PlayerSide } from './types/chess';
+import { BOARD_THEMES, BOT_DIFFICULTIES, PIECE_VALUES, TIME_CONTROLS } from './constants/chessData';
+import { sounds } from './services/sound';
+import { stockfish } from './services/stockfish';
+import type { EngineEvaluation } from './services/stockfish';
+import { classifyMove } from './services/classifier';
+import { Flag, RotateCcw } from 'lucide-react';
+
+const DEFAULT_SETTINGS: GameSettings = {
+  boardTheme: 'classic',
+  pieceStyle: 'staunton',
+  botLevel: 4,
+  playerColor: 'w',
+  timeControl: '5+3',
+  soundEnabled: true,
+  showHints: true,
+  showEvalBar: true,
+  viewMode: '2d',
+};
+
+export const App: React.FC = () => {
+  // Settings (persisted in LocalStorage)
+  const [settings, setSettings] = useState<GameSettings>(() => {
+    try {
+      const saved = localStorage.getItem('chess_ai_settings');
+      return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
+    } catch {
+      return DEFAULT_SETTINGS;
+    }
+  });
+
+  const saveSettings = (newSettings: Partial<GameSettings>) => {
+    setSettings((prev) => {
+      const updated = { ...prev, ...newSettings };
+      try {
+        localStorage.setItem('chess_ai_settings', JSON.stringify(updated));
+      } catch (e) {
+        console.error(e);
+      }
+      return updated;
+    });
+  };
+
+  // Game state
+  const [chess, setChess] = useState<Chess>(() => new Chess());
+  const [history, setHistory] = useState<MoveAnalysis[]>([]);
+  const [currentStepIndex, setCurrentStepIndex] = useState<number>(-1);
+  const [boardFlipped, setBoardFlipped] = useState<boolean>(false);
+  const [isBotThinking, setIsBotThinking] = useState<boolean>(false);
+  const [evaluation, setEvaluation] = useState<EngineEvaluation>({ score: 0, depth: 0, bestMove: '' });
+
+  // Clock state
+  const [whiteTime, setWhiteTime] = useState<number | undefined>(300);
+  const [blackTime, setBlackTime] = useState<number | undefined>(300);
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
+
+  // Modals
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isFenPgnOpen, setIsFenPgnOpen] = useState(false);
+  const [gameOver, setGameOver] = useState<{
+    isOpen: boolean;
+    winner: 'w' | 'b' | 'draw' | null;
+    reason: string;
+  }>({ isOpen: false, winner: null, reason: '' });
+
+  // Determined actual player color ('w' or 'b')
+  const [resolvedPlayerColor, setResolvedPlayerColor] = useState<'w' | 'b'>('w');
+
+  // Ref to true current Chess instance to eliminate stale closure state
+  const chessRef = useRef<Chess>(new Chess());
+
+  // Ref to trigger bot response reliably
+  const triggerBotResponseRef = useRef<(game: Chess) => Promise<void>>(async () => {});
+
+  // Sync sound manager enabled state
+  useEffect(() => {
+    sounds.setEnabled(settings.soundEnabled);
+  }, [settings.soundEnabled]);
+
+  // Subscribe to Stockfish real-time evaluation updates
+  useEffect(() => {
+    const unsub = stockfish.subscribeEval((ev) => {
+      setEvaluation(ev);
+    });
+    return unsub;
+  }, []);
+
+  // Initialize new game
+  const startNewGame = useCallback((colorOverride?: PlayerSide) => {
+    const targetColor = colorOverride || settings.playerColor;
+    let actualColor: 'w' | 'b' = 'w';
+    if (targetColor === 'random') {
+      actualColor = Math.random() < 0.5 ? 'w' : 'b';
+    } else {
+      actualColor = targetColor;
+    }
+
+    setResolvedPlayerColor(actualColor);
+    setBoardFlipped(actualColor === 'b');
+
+    const newChess = new Chess();
+    chessRef.current = newChess;
+    setChess(newChess);
+    setHistory([]);
+    setCurrentStepIndex(-1);
+    setIsBotThinking(false);
+    setGameOver({ isOpen: false, winner: null, reason: '' });
+
+    // Setup Clocks
+    const tc = TIME_CONTROLS.find((t) => t.id === settings.timeControl);
+    if (tc && tc.initialSeconds > 0) {
+      setWhiteTime(tc.initialSeconds);
+      setBlackTime(tc.initialSeconds);
+      setIsTimerRunning(true);
+    } else {
+      setWhiteTime(undefined);
+      setBlackTime(undefined);
+      setIsTimerRunning(false);
+    }
+
+    sounds.playGameStart();
+
+    // Trigger initial eval
+    stockfish.evaluatePosition(newChess.fen(), 10);
+
+    // If player is Black, bot plays White and moves first!
+    if (actualColor === 'b') {
+      setTimeout(() => {
+        triggerBotResponseRef.current(newChess);
+      }, 500);
+    }
+  }, [settings.playerColor, settings.timeControl]);
+
+  // Handle game initial mount
+  useEffect(() => {
+    startNewGame();
+  }, []);
+
+  // Clock countdown interval
+  useEffect(() => {
+    if (!isTimerRunning || chess.isGameOver()) return;
+
+    const timer = setInterval(() => {
+      const turn = chess.turn();
+      if (turn === 'w') {
+        setWhiteTime((prev) => {
+          if (prev === undefined) return undefined;
+          if (prev <= 1) {
+            handleTimeout('w');
+            return 0;
+          }
+          return prev - 1;
+        });
+      } else {
+        setBlackTime((prev) => {
+          if (prev === undefined) return undefined;
+          if (prev <= 1) {
+            handleTimeout('b');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isTimerRunning, chess.turn(), chess.isGameOver()]);
+
+  const handleTimeout = (loser: 'w' | 'b') => {
+    const winner = loser === 'w' ? 'b' : 'w';
+    setIsTimerRunning(false);
+    setGameOver({
+      isOpen: true,
+      winner,
+      reason: loser === 'w' ? 'Белые проиграли по времени' : 'Черные проиграли по времени',
+    });
+  };
+
+  // Check Game Over conditions
+  const checkGameOver = useCallback((game: Chess) => {
+    if (game.isGameOver()) {
+      setIsTimerRunning(false);
+      let winner: 'w' | 'b' | 'draw' = 'draw';
+      let reason = 'Ничья';
+
+      if (game.isCheckmate()) {
+        winner = game.turn() === 'w' ? 'b' : 'w';
+        reason = `Мат! Победа ${winner === 'w' ? 'Белых' : 'Черных'}`;
+        sounds.playCheckmate();
+      } else if (game.isStalemate()) {
+        reason = 'Ничья (Пат)';
+      } else if (game.isThreefoldRepetition()) {
+        reason = 'Ничья (Троекратное повторение)';
+      } else if (game.isInsufficientMaterial()) {
+        reason = 'Ничья (Недостаточно материала)';
+      }
+
+      setGameOver({ isOpen: true, winner, reason });
+      return true;
+    }
+    return false;
+  }, []);
+
+  // Core move execution
+  const executeMove = useCallback(
+    async (from: Square, to: Square, promotion?: string, isBot: boolean = false): Promise<boolean> => {
+      const currentChess = chessRef.current;
+      if (currentChess.isGameOver()) return false;
+      if (!isBot && isBotThinking) return false;
+
+      // Ensure we are viewing latest position
+      if (currentStepIndex !== history.length - 1 && history.length > 0) {
+        return false;
+      }
+
+      const fenBefore = currentChess.fen();
+      const movingPlayerColor = currentChess.turn();
+      const evalBefore = movingPlayerColor === 'w' ? evaluation.score : -evaluation.score;
+
+      try {
+        const piece = currentChess.get(from);
+        const isPromotion = piece && piece.type === 'p' && (to.endsWith('8') || to.endsWith('1'));
+        const moveOptions: { from: Square; to: Square; promotion?: string } = { from, to };
+        if (isPromotion) {
+          moveOptions.promotion = promotion || 'q';
+        }
+
+        const moveResult = currentChess.move(moveOptions);
+        if (!moveResult) return false;
+
+        // Sound triggers
+        if (currentChess.isCheckmate()) {
+          sounds.playCheckmate();
+        } else if (currentChess.inCheck()) {
+          sounds.playCheck();
+        } else if (moveResult.captured) {
+          sounds.playCapture();
+        } else if (moveResult.promotion) {
+          sounds.playPromote();
+        } else {
+          sounds.playMove();
+        }
+
+        // Apply clock increment
+        const tc = TIME_CONTROLS.find((t) => t.id === settings.timeControl);
+        if (tc && tc.incrementSeconds > 0) {
+          if (movingPlayerColor === 'w') {
+            setWhiteTime((prev) => (prev !== undefined ? prev + tc.incrementSeconds : undefined));
+          } else {
+            setBlackTime((prev) => (prev !== undefined ? prev + tc.incrementSeconds : undefined));
+          }
+        }
+
+        // Update state with new board
+        const newFen = currentChess.fen();
+        setChess(new Chess(newFen));
+
+        // Evaluate new position with Stockfish
+        const evalAfterData = await stockfish.evaluatePosition(newFen, 10);
+        const evalAfter = movingPlayerColor === 'w' ? evalAfterData.score : -evalAfterData.score;
+
+        // Classify move quality
+        const classification = classifyMove(
+          new Chess(fenBefore),
+          {
+            from,
+            to,
+            piece: moveResult.piece,
+            captured: moveResult.captured,
+            san: moveResult.san,
+            promotion: moveResult.promotion,
+          },
+          evalBefore,
+          evalAfter,
+          evaluation.bestMove
+        );
+
+        if (classification.quality === 'blunder') {
+          sounds.playBlunder();
+        }
+
+        const analysisEntry: MoveAnalysis = {
+          san: moveResult.san,
+          from,
+          to,
+          piece: moveResult.piece,
+          color: moveResult.color,
+          captured: moveResult.captured,
+          promotion: moveResult.promotion,
+          fenBefore,
+          fenAfter: newFen,
+          evalBefore,
+          evalAfter,
+          bestMove: evaluation.bestMove,
+          quality: classification.quality,
+          explanation: classification.explanation,
+        };
+
+        const nextHistory = [...history, analysisEntry];
+        setHistory(nextHistory);
+        setCurrentStepIndex(nextHistory.length - 1);
+
+        // Check if game ended
+        const isEnd = checkGameOver(currentChess);
+
+        // If player moved and game continues, trigger bot response!
+        if (!isEnd && !isBot && currentChess.turn() !== resolvedPlayerColor) {
+          triggerBotResponseRef.current(currentChess);
+        }
+
+        return true;
+      } catch (err) {
+        console.warn('Illegal move attempted:', err);
+        return false;
+      }
+    },
+    [isBotThinking, evaluation, settings.timeControl, checkGameOver, resolvedPlayerColor, history, currentStepIndex]
+  );
+
+  // Direct bot response handler (immune to effect cancellation)
+  const triggerBotResponse = useCallback(
+    async (gameInstance: Chess) => {
+      if (gameInstance.isGameOver()) return;
+      setIsBotThinking(true);
+
+      try {
+        const botConfig = BOT_DIFFICULTIES.find((b) => b.level === settings.botLevel) || BOT_DIFFICULTIES[3];
+        // Natural thinking pause
+        await new Promise((r) => setTimeout(r, 380));
+
+        const currentFen = chessRef.current.fen();
+        const moveUci = await stockfish.getBotMove(
+          currentFen,
+          botConfig.depth,
+          botConfig.skillLevel,
+          botConfig.blunderProb
+        );
+
+        if (moveUci && moveUci.length >= 4) {
+          const from = moveUci.slice(0, 2) as Square;
+          const to = moveUci.slice(2, 4) as Square;
+          const promotion = moveUci.length > 4 ? moveUci[4] : undefined;
+          await executeMove(from, to, promotion, true);
+        }
+      } catch (err) {
+        console.error('Bot move failed:', err);
+      } finally {
+        setIsBotThinking(false);
+      }
+    },
+    [settings.botLevel, executeMove]
+  );
+
+  useEffect(() => {
+    triggerBotResponseRef.current = triggerBotResponse;
+  }, [triggerBotResponse]);
+
+  // Jump to step for interactive replay
+  const handleJumpToStep = (index: number) => {
+    if (index < 0) {
+      // Starting position
+      const initialChess = new Chess();
+      chessRef.current = initialChess;
+      setChess(initialChess);
+      setCurrentStepIndex(-1);
+    } else if (index < history.length) {
+      const step = history[index];
+      const stepChess = new Chess(step.fenAfter);
+      chessRef.current = stepChess;
+      setChess(stepChess);
+      setCurrentStepIndex(index);
+    }
+  };
+
+  // Load custom FEN
+  const handleLoadFen = (fen: string): boolean => {
+    try {
+      const testChess = new Chess(fen);
+      chessRef.current = testChess;
+      setChess(testChess);
+      setHistory([]);
+      setCurrentStepIndex(-1);
+      stockfish.evaluatePosition(fen, 12);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // Compute captured pieces and material imbalance
+  const { whiteCaptured, blackCaptured, whiteAdvantage } = React.useMemo(() => {
+    const counts: Record<string, number> = { p: 8, n: 2, b: 2, r: 2, q: 1 };
+    const curWhiteCounts: Record<string, number> = { p: 0, n: 0, b: 0, r: 0, q: 0 };
+    const curBlackCounts: Record<string, number> = { p: 0, n: 0, b: 0, r: 0, q: 0 };
+
+    const board = chess.board();
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const p = board[r][c];
+        if (!p || p.type === 'k') continue;
+        if (p.color === 'w') curWhiteCounts[p.type] = (curWhiteCounts[p.type] || 0) + 1;
+        else curBlackCounts[p.type] = (curBlackCounts[p.type] || 0) + 1;
+      }
+    }
+
+    const whiteCap: string[] = []; // pieces White has captured (lost by black)
+    const blackCap: string[] = []; // pieces Black has captured (lost by white)
+
+    let whiteMaterial = 0;
+    let blackMaterial = 0;
+
+    Object.keys(counts).forEach((type) => {
+      const wLost = Math.max(0, counts[type] - curWhiteCounts[type]);
+      const bLost = Math.max(0, counts[type] - curBlackCounts[type]);
+      for (let i = 0; i < bLost; i++) whiteCap.push(type);
+      for (let i = 0; i < wLost; i++) blackCap.push(type);
+
+      whiteMaterial += curWhiteCounts[type] * PIECE_VALUES[type];
+      blackMaterial += curBlackCounts[type] * PIECE_VALUES[type];
+    });
+
+    const matDiff = Math.floor((whiteMaterial - blackMaterial) / 100);
+
+    return {
+      whiteCaptured: whiteCap,
+      blackCaptured: blackCap,
+      whiteAdvantage: matDiff,
+    };
+  }, [chess.fen()]);
+
+  const activeTheme = BOARD_THEMES[settings.boardTheme] || BOARD_THEMES.classic;
+  const currentBot = BOT_DIFFICULTIES.find((b) => b.level === settings.botLevel) || BOT_DIFFICULTIES[3];
+  const lastMoveAnalysis = history.length > 0 && currentStepIndex >= 0 ? history[currentStepIndex] : undefined;
+
+  // Bot vs Player cards
+  const topPlayer = boardFlipped ? (
+    <PlayerCard
+      name="Вы"
+      color="w"
+      isBot={false}
+      pieceStyle={settings.pieceStyle}
+      timeRemaining={whiteTime}
+      isActive={chess.turn() === 'w' && !chess.isGameOver()}
+      capturedPieces={whiteCaptured}
+      materialDifference={whiteAdvantage > 0 ? whiteAdvantage : 0}
+    />
+  ) : (
+    <PlayerCard
+      name={`Stockfish (${currentBot.name})`}
+      rating={currentBot.rating}
+      color="b"
+      isBot={true}
+      pieceStyle={settings.pieceStyle}
+      timeRemaining={blackTime}
+      isActive={chess.turn() === 'b' && !chess.isGameOver()}
+      capturedPieces={blackCaptured}
+      materialDifference={whiteAdvantage < 0 ? Math.abs(whiteAdvantage) : 0}
+    />
+  );
+
+  const bottomPlayer = boardFlipped ? (
+    <PlayerCard
+      name={`Stockfish (${currentBot.name})`}
+      rating={currentBot.rating}
+      color="b"
+      isBot={true}
+      pieceStyle={settings.pieceStyle}
+      timeRemaining={blackTime}
+      isActive={chess.turn() === 'b' && !chess.isGameOver()}
+      capturedPieces={blackCaptured}
+      materialDifference={whiteAdvantage < 0 ? Math.abs(whiteAdvantage) : 0}
+    />
+  ) : (
+    <PlayerCard
+      name="Вы"
+      color="w"
+      isBot={false}
+      pieceStyle={settings.pieceStyle}
+      timeRemaining={whiteTime}
+      isActive={chess.turn() === 'w' && !chess.isGameOver()}
+      capturedPieces={whiteCaptured}
+      materialDifference={whiteAdvantage > 0 ? whiteAdvantage : 0}
+    />
+  );
+
+  return (
+    <div
+      className="min-h-screen flex flex-col transition-colors duration-500"
+      style={{ backgroundColor: activeTheme.background }}
+    >
+      {/* Top Navbar */}
+      <Navbar
+        viewMode={settings.viewMode}
+        onToggleViewMode={() => saveSettings({ viewMode: settings.viewMode === '2d' ? '3d' : '2d' })}
+        flipped={boardFlipped}
+        onFlipBoard={() => setBoardFlipped(!boardFlipped)}
+        soundEnabled={settings.soundEnabled}
+        onToggleSound={() => saveSettings({ soundEnabled: !settings.soundEnabled })}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenFenPgn={() => setIsFenPgnOpen(true)}
+        onNewGame={() => startNewGame()}
+      />
+
+      {/* Main Game Arena */}
+      <main className="flex-1 container mx-auto p-3 sm:p-5 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6 max-w-7xl">
+        {/* Left / Center Section: Board + Eval Bar + Player Cards */}
+        <div className="flex flex-col items-center w-full max-w-[620px]">
+          {/* Top Player Card */}
+          <div className="w-full mb-2.5">{topPlayer}</div>
+
+          {/* Board + Side Eval Bar Container */}
+          <div className="relative flex items-center justify-center w-full gap-2.5">
+            {/* Live Stockfish Evaluation Bar */}
+            {settings.showEvalBar && (
+              <EvaluationBar
+                evaluation={evaluation}
+                flipped={boardFlipped}
+                className="w-7 h-[420px] sm:h-[540px] shrink-0"
+              />
+            )}
+
+            {/* Chessboard (2D or 3D) */}
+            <div className="flex-1 flex justify-center">
+              {settings.viewMode === '2d' ? (
+                <Chessboard2D
+                  chess={chess}
+                  boardTheme={activeTheme}
+                  pieceStyle={settings.pieceStyle}
+                  flipped={boardFlipped}
+                  onMove={executeMove}
+                  lastAnalysis={lastMoveAnalysis}
+                  disabled={isBotThinking || (chess.turn() !== resolvedPlayerColor && !chess.isGameOver())}
+                />
+              ) : (
+                <Chessboard3D
+                  chess={chess}
+                  boardTheme={activeTheme}
+                  pieceStyle={settings.pieceStyle}
+                  flipped={boardFlipped}
+                  onMove={executeMove}
+                  lastAnalysis={lastMoveAnalysis}
+                  disabled={isBotThinking || (chess.turn() !== resolvedPlayerColor && !chess.isGameOver())}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Bottom Player Card */}
+          <div className="w-full mt-2.5">{bottomPlayer}</div>
+
+          {/* Bot thinking indicator bar */}
+          {isBotThinking && (
+            <div className="mt-2 flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-950/60 px-4 py-1 text-xs font-semibold text-cyan-300 animate-pulse">
+              <span className="h-2 w-2 rounded-full bg-cyan-400" />
+              <span>Stockfish рассчитывает глубину {currentBot.depth}...</span>
+            </div>
+          )}
+        </div>
+
+        {/* Right Section: Move History, PGN & Quick Controls */}
+        <div className="w-full lg:w-[380px] flex flex-col gap-4">
+          {/* Move History Table */}
+          <MoveHistory
+            history={history}
+            currentStepIndex={currentStepIndex}
+            onJumpToStep={handleJumpToStep}
+          />
+
+          {/* Quick Resign / Rematch Bar */}
+          <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 p-3 shadow-lg">
+            <button
+              onClick={() => {
+                if (window.confirm('Сдаться в текущей партии?')) {
+                  const winner = resolvedPlayerColor === 'w' ? 'b' : 'w';
+                  setGameOver({ isOpen: true, winner, reason: 'Сдача партии' });
+                }
+              }}
+              disabled={chess.isGameOver()}
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/80 py-2 text-xs font-bold text-slate-300 hover:bg-red-950/40 hover:border-red-500/40 hover:text-red-300 transition disabled:opacity-40 cursor-pointer"
+            >
+              <Flag className="h-3.5 w-3.5" />
+              <span>Сдаться</span>
+            </button>
+            <button
+              onClick={() => startNewGame()}
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-cyan-600/90 py-2 text-xs font-bold text-white hover:bg-cyan-500 shadow-md transition cursor-pointer"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>Новая партия</span>
+            </button>
+          </div>
+
+          {/* Engine Quality Badge Guide Banner */}
+          <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-xs text-slate-400 space-y-2">
+            <h4 className="font-bold text-slate-200">Система оценки ходов Stockfish:</h4>
+            <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px]">
+              <span className="flex items-center gap-1.5">
+                <span>💎</span> <strong className="text-cyan-300">Бриллиантовый</strong> (Жертва)
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span>⭐️</span> <strong className="text-green-300">Лучший</strong> (1-я линия)
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span>👍</span> <strong className="text-lime-300">Отличный / Хороший</strong>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span>❓</span> <strong className="text-yellow-300">Неточность</strong>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span>⚠️</span> <strong className="text-orange-300">Ошибка</strong>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span>❌</span> <strong className="text-red-300">Зевок</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Modals */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        settings={settings}
+        onUpdateSettings={saveSettings}
+        onRestartGame={() => startNewGame()}
+      />
+
+      <FenPgnModal
+        isOpen={isFenPgnOpen}
+        onClose={() => setIsFenPgnOpen(false)}
+        currentFen={chess.fen()}
+        currentPgn={chess.pgn()}
+        onLoadFen={handleLoadFen}
+      />
+
+      <GameOverModal
+        isOpen={gameOver.isOpen}
+        onClose={() => setGameOver({ ...gameOver, isOpen: false })}
+        winner={gameOver.winner}
+        reason={gameOver.reason}
+        playerColor={resolvedPlayerColor}
+        history={history}
+        onRestart={() => startNewGame()}
+      />
+    </div>
+  );
+};
+
+export default App;
