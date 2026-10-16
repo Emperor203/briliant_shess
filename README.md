@@ -1,8 +1,10 @@
-# 💎 Бриллиант (Brilliant Chess) — 2D/3D Interactive Chess Web App
+# 💎 Бриллиантовые Шахматы — 2D/3D Interactive Chess Web App
 
 Интерактивное шахматное веб-приложение нового поколения с ИИ-ботом Stockfish, анализом ходов в реальном времени, 2D/3D режимами доски и бейджами качества ходов в стиле Chess.com.
 
-![Preview](public/favicon.svg)
+<p align="center">
+  <img src="public/logo.jpg" alt="Бриллиантовые Шахматы" width="480" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" />
+</p>
 
 ---
 
