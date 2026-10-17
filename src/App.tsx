@@ -10,7 +10,8 @@ import { Navbar } from './components/Navbar';
 import { SettingsModal } from './components/SettingsModal';
 import { FenPgnModal } from './components/FenPgnModal';
 import { GameOverModal } from './components/GameOverModal';
-import { GameReviewModal } from './components/GameReviewModal';
+import { CoachReviewBar, CoachReviewControls } from './components/CoachReviewBar';
+import { uciToArrow } from './services/reviewService';
 import type { GameSettings, MoveAnalysis, PlayerSide, BoardArrow } from './types/chess';
 import { BOARD_THEMES, BOT_DIFFICULTIES, PIECE_VALUES, TIME_CONTROLS } from './constants/chessData';
 import { sounds } from './services/sound';
@@ -71,8 +72,7 @@ export const App: React.FC = () => {
   // Modals & Review State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isFenPgnOpen, setIsFenPgnOpen] = useState(false);
-  const [isReviewOpen, setIsReviewOpen] = useState(false);
-  const [analysisArrow, setAnalysisArrow] = useState<BoardArrow | null>(null);
+  const [isReviewMode, setIsReviewMode] = useState(false);
   const [gameOver, setGameOver] = useState<{
     isOpen: boolean;
     winner: 'w' | 'b' | 'draw' | null;
@@ -120,8 +120,7 @@ export const App: React.FC = () => {
     setHistory([]);
     setCurrentStepIndex(-1);
     setIsBotThinking(false);
-    setIsReviewOpen(false);
-    setAnalysisArrow(null);
+    setIsReviewMode(false);
     setGameOver({ isOpen: false, winner: null, reason: '' });
 
     // Setup Clocks
@@ -454,19 +453,41 @@ export const App: React.FC = () => {
   // Active arrows to display on the board
   const boardArrows: BoardArrow[] = React.useMemo(() => {
     const list: BoardArrow[] = [];
-    if (analysisArrow) {
-      list.push(analysisArrow);
-    }
-    // Show arrow for the move being viewed in history
-    if (lastMoveAnalysis) {
+
+    if (isReviewMode && lastMoveAnalysis) {
+      const q = lastMoveAnalysis.quality;
+      const isError = q === 'mistake' || q === 'blunder' || q === 'inaccuracy';
+
+      if (isError && lastMoveAnalysis.bestMove) {
+        // Green arrow showing Stockfish's best move recommendation
+        const bestArrow = uciToArrow(lastMoveAnalysis.bestMove, '#22c55e', 'Лучший ход');
+        if (bestArrow) list.push(bestArrow);
+
+        // Red arrow highlighting the error/blunder made
+        list.push({
+          from: lastMoveAnalysis.from,
+          to: lastMoveAnalysis.to,
+          color: '#ef4444',
+        });
+      } else {
+        // Green or cyan arrow for good/best/brilliant/book moves
+        list.push({
+          from: lastMoveAnalysis.from,
+          to: lastMoveAnalysis.to,
+          color: q === 'brilliant' ? '#06b6d4' : '#22c55e',
+        });
+      }
+    } else if (lastMoveAnalysis) {
+      // Normal game / history mode: show amber move arrow
       list.push({
         from: lastMoveAnalysis.from,
         to: lastMoveAnalysis.to,
-        color: '#f59e0b', // Vibrant gold arrow showing move trajectory
+        color: '#f59e0b',
       });
     }
+
     return list;
-  }, [analysisArrow, lastMoveAnalysis]);
+  }, [isReviewMode, lastMoveAnalysis]);
 
   // Bot vs Player cards
   const topPlayer = boardFlipped ? (
@@ -536,39 +557,59 @@ export const App: React.FC = () => {
         onToggleArrows={() => saveSettings({ showArrows: !settings.showArrows })}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenFenPgn={() => setIsFenPgnOpen(true)}
-        onOpenReview={() => setIsReviewOpen(true)}
+        onOpenReview={() => {
+          setIsReviewMode(true);
+          handleJumpToStep(-1);
+        }}
         onNewGame={() => startNewGame()}
       />
 
       {/* Main Game Arena */}
       <main className="flex-1 container mx-auto p-3 sm:p-5 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6 max-w-7xl">
-        {/* Left / Center Section: Board + Eval Bar + Player Cards */}
+        {/* Left / Center Section: Board + Eval Bar + Player Cards / Coach Review */}
         <div className="flex flex-col items-center w-full max-w-[620px]">
-          {/* Top Player Card */}
-          <div className="w-full mb-2.5">{topPlayer}</div>
-
-          {/* Browsing Old Move Notification Banner */}
-          {isBrowsingHistory && (
-            <div className="w-full mb-2.5 flex items-center justify-between rounded-xl border border-amber-500/50 bg-amber-950/80 px-3.5 py-2 text-xs font-medium text-amber-200 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-1">
-              <div className="flex items-center gap-2">
-                <span className="flex h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
-                <span>
-                  Просмотр истории:{' '}
-                  <strong className="text-amber-100">
-                    {currentStepIndex >= 0 && history[currentStepIndex]
-                      ? `Ход ${Math.floor(currentStepIndex / 2) + 1}. ${history[currentStepIndex].color === 'w' ? 'Белые' : 'Черные'} (${history[currentStepIndex].san})`
-                      : 'Начальная позиция'}
-                  </strong>
-                </span>
-              </div>
-              <button
-                onClick={() => handleJumpToStep(history.length - 1)}
-                className="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-3 py-1 text-xs font-bold text-white shadow-md transition cursor-pointer"
-              >
-                <span>Вернуться в игру</span>
-                <span className="h-2 w-2 rounded-full bg-red-400 animate-pulse" />
-              </button>
+          {/* Top section: Coach Owl Review Card OR Top Player Card */}
+          {isReviewMode ? (
+            <div className="w-full mb-2.5">
+              <CoachReviewBar
+                history={history}
+                currentStepIndex={currentStepIndex}
+                onJumpToStep={handleJumpToStep}
+                onExitReview={() => {
+                  setIsReviewMode(false);
+                  handleJumpToStep(history.length - 1);
+                }}
+                materialDiff={whiteAdvantage}
+              />
             </div>
+          ) : (
+            <>
+              <div className="w-full mb-2.5">{topPlayer}</div>
+
+              {/* Browsing Old Move Notification Banner */}
+              {isBrowsingHistory && (
+                <div className="w-full mb-2.5 flex items-center justify-between rounded-xl border border-amber-500/50 bg-amber-950/80 px-3.5 py-2 text-xs font-medium text-amber-200 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-1">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
+                    <span>
+                      Просмотр истории:{' '}
+                      <strong className="text-amber-100">
+                        {currentStepIndex >= 0 && history[currentStepIndex]
+                          ? `Ход ${Math.floor(currentStepIndex / 2) + 1}. ${history[currentStepIndex].color === 'w' ? 'Белые' : 'Черные'} (${history[currentStepIndex].san})`
+                          : 'Начальная позиция'}
+                      </strong>
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => handleJumpToStep(history.length - 1)}
+                    className="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-3 py-1 text-xs font-bold text-white shadow-md transition cursor-pointer"
+                  >
+                    <span>Вернуться в игру</span>
+                    <span className="h-2 w-2 rounded-full bg-red-400 animate-pulse" />
+                  </button>
+                </div>
+              )}
+            </>
           )}
 
           {/* Board + Side Eval Bar Container */}
@@ -593,7 +634,7 @@ export const App: React.FC = () => {
                   onMove={executeMove}
                   lastAnalysis={lastMoveAnalysis}
                   arrows={settings.showArrows ? boardArrows : []}
-                  disabled={isBotThinking || isBrowsingHistory || (chess.turn() !== resolvedPlayerColor && !chess.isGameOver())}
+                  disabled={isBotThinking || isReviewMode || isBrowsingHistory || (chess.turn() !== resolvedPlayerColor && !chess.isGameOver())}
                 />
               ) : (
                 <Chessboard3D
@@ -603,14 +644,25 @@ export const App: React.FC = () => {
                   flipped={boardFlipped}
                   onMove={executeMove}
                   lastAnalysis={lastMoveAnalysis}
-                  disabled={isBotThinking || isBrowsingHistory || (chess.turn() !== resolvedPlayerColor && !chess.isGameOver())}
+                  disabled={isBotThinking || isReviewMode || isBrowsingHistory || (chess.turn() !== resolvedPlayerColor && !chess.isGameOver())}
                 />
               )}
             </div>
           </div>
 
-          {/* Bottom Player Card */}
-          <div className="w-full mt-2.5">{bottomPlayer}</div>
+          {/* Bottom section: Coach Review Controls (Material + Move Ribbon + Nav Buttons) OR Bottom Player Card */}
+          {isReviewMode ? (
+            <div className="w-full">
+              <CoachReviewControls
+                history={history}
+                currentStepIndex={currentStepIndex}
+                onJumpToStep={handleJumpToStep}
+                materialDiff={whiteAdvantage}
+              />
+            </div>
+          ) : (
+            <div className="w-full mt-2.5">{bottomPlayer}</div>
+          )}
 
           {/* Bot thinking indicator bar */}
           {isBotThinking && (
@@ -706,21 +758,10 @@ export const App: React.FC = () => {
         playerColor={resolvedPlayerColor}
         history={history}
         onRestart={() => startNewGame()}
-        onOpenReview={() => setIsReviewOpen(true)}
-      />
-
-      {/* Game Review & Analysis Modal */}
-      <GameReviewModal
-        isOpen={isReviewOpen}
-        onClose={() => {
-          setIsReviewOpen(false);
-          setAnalysisArrow(null);
+        onOpenReview={() => {
+          setIsReviewMode(true);
+          handleJumpToStep(-1);
         }}
-        history={history}
-        botRating={currentBot.rating}
-        currentStepIndex={currentStepIndex}
-        onJumpToStep={handleJumpToStep}
-        onShowBestMoveArrow={setAnalysisArrow}
       />
     </div>
   );

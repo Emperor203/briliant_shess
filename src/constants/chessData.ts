@@ -78,6 +78,13 @@ export const TIME_CONTROLS: TimeControlConfig[] = [
 ];
 
 export const MOVE_BADGES: Record<MoveQuality, { label: string; icon: string; color: string; bg: string; border: string }> = {
+  book: {
+    label: 'Дебют',
+    icon: '📖',
+    color: '#a855f7',
+    bg: 'bg-purple-500/20 text-purple-300',
+    border: 'border-purple-400',
+  },
   brilliant: {
     label: 'Бриллиантовый',
     icon: '💎',

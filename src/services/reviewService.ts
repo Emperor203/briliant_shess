@@ -41,7 +41,8 @@ export function generateGameReview(
     }
 
     let sumAcc = 0;
-    const counts = {
+    const counts: Record<string, number> = {
+      book: 0,
       brilliant: 0,
       best: 0,
       excellent: 0,
@@ -68,7 +69,14 @@ export function generateGameReview(
     return {
       accuracy: avgAccuracy,
       performanceRating,
-      ...counts,
+      book: counts.book,
+      brilliant: counts.brilliant,
+      best: counts.best,
+      excellent: counts.excellent,
+      good: counts.good,
+      inaccuracy: counts.inaccuracy,
+      mistake: counts.mistake,
+      blunder: counts.blunder,
       totalMoves: moves.length,
     };
   };

@@ -1,6 +1,6 @@
 import type { Square, PieceSymbol, Color } from 'chess.js';
 
-export type MoveQuality = 'brilliant' | 'best' | 'excellent' | 'good' | 'inaccuracy' | 'mistake' | 'blunder';
+export type MoveQuality = 'brilliant' | 'best' | 'excellent' | 'good' | 'inaccuracy' | 'mistake' | 'blunder' | 'book';
 
 export interface MoveAnalysis {
   san: string;
@@ -29,6 +29,7 @@ export interface BoardArrow {
 export interface PlayerAccuracyStats {
   accuracy: number; // percentage 0-100
   performanceRating: number;
+  book?: number;
   brilliant: number;
   best: number;
   excellent: number;
