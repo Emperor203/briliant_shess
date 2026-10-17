@@ -1,7 +1,7 @@
 import React from 'react';
 import type { GameSettings, BoardThemeId, PieceStyleId, PlayerSide } from '../types/chess';
 import { BOARD_THEMES, BOT_DIFFICULTIES, TIME_CONTROLS } from '../constants/chessData';
-import { X, Volume2, VolumeX, Eye, Palette, Cpu, Clock, Navigation, Sparkles } from 'lucide-react';
+import { X, Volume2, VolumeX, Eye, Palette, Cpu, Clock, Navigation, Sparkles, CloudRain } from 'lucide-react';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -247,6 +247,29 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div
                   className={`h-5 w-5 rounded-full bg-white shadow-md transition-transform ${
                     settings.showPet !== false ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="text-sm text-slate-300 flex items-center gap-2">
+                  <CloudRain className="h-4 w-4 text-cyan-400" />
+                  Шахматный дождь на фоне
+                </span>
+                <span className="text-[11px] text-slate-500 ml-6">
+                  Атмосферный дождь из падающих полупрозрачных фигур
+                </span>
+              </div>
+              <button
+                onClick={() => onUpdateSettings({ showChessRain: settings.showChessRain !== false ? false : true })}
+                className={`h-6 w-11 rounded-full p-0.5 transition-colors cursor-pointer shrink-0 ${
+                  settings.showChessRain !== false ? 'bg-cyan-500' : 'bg-slate-800'
+                }`}
+              >
+                <div
+                  className={`h-5 w-5 rounded-full bg-white shadow-md transition-transform ${
+                    settings.showChessRain !== false ? 'translate-x-5' : 'translate-x-0'
                   }`}
                 />
               </button>

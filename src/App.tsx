@@ -20,6 +20,7 @@ import type { EngineEvaluation } from './services/stockfish';
 import { classifyMove } from './services/classifier';
 import { Flag, RotateCcw } from 'lucide-react';
 import { PawnPetCompanion } from './components/PawnPetCompanion';
+import { ChessPieceRain } from './components/ChessPieceRain';
 
 const DEFAULT_SETTINGS: GameSettings = {
   boardTheme: 'classic',
@@ -32,6 +33,7 @@ const DEFAULT_SETTINGS: GameSettings = {
   showEvalBar: true,
   showArrows: true,
   showPet: true,
+  showChessRain: true,
   viewMode: '2d',
 };
 
@@ -545,9 +547,12 @@ export const App: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col transition-colors duration-500"
+      className="min-h-screen flex flex-col transition-colors duration-500 relative"
       style={{ backgroundColor: activeTheme.background }}
     >
+      {/* Ambient Falling Chess Pieces Background Rain */}
+      {settings.showChessRain !== false && <ChessPieceRain />}
+
       {/* Top Navbar */}
       <Navbar
         viewMode={settings.viewMode}

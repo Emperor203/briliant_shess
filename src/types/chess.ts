@@ -98,5 +98,6 @@ export interface GameSettings {
   showEvalBar: boolean;
   showArrows: boolean;
   showPet: boolean;
+  showChessRain: boolean;
   viewMode: '2d' | '3d';
 }
