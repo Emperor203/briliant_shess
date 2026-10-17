@@ -11,32 +11,113 @@ interface CoachReviewBarProps {
   materialDiff: number; // Positive = White advantage, Negative = Black
 }
 
-// Coach Owl Mascot Vector SVG
-export const CoachOwlSvg: React.FC<{ className?: string }> = ({ className = 'w-12 h-12' }) => (
+// Chess Professor (Grandfather in Tweed Jacket) Vector SVG
+export const ChessProfessorSvg: React.FC<{ className?: string }> = ({ className = 'w-12 h-12' }) => (
   <svg viewBox="0 0 64 64" className={className} fill="none">
-    {/* Body */}
-    <circle cx="32" cy="34" r="24" fill="#059669" />
-    <ellipse cx="32" cy="40" rx="14" ry="16" fill="#10b981" />
-    {/* Ears */}
-    <polygon points="16,14 26,20 18,28" fill="#047857" />
-    <polygon points="48,14 38,20 46,28" fill="#047857" />
-    {/* Glasses frames */}
-    <circle cx="23" cy="30" r="10" stroke="#f59e0b" strokeWidth="2.5" fill="#ffffff" />
-    <circle cx="41" cy="30" r="10" stroke="#f59e0b" strokeWidth="2.5" fill="#ffffff" />
-    <line x1="33" y1="30" x2="31" y2="30" stroke="#f59e0b" strokeWidth="2.5" />
-    {/* Eyes */}
-    <circle cx="23" cy="30" r="4.5" fill="#0f172a" />
-    <circle cx="41" cy="30" r="4.5" fill="#0f172a" />
-    {/* Eye sparkles */}
-    <circle cx="21.5" cy="28.5" r="1.5" fill="#ffffff" />
-    <circle cx="39.5" cy="28.5" r="1.5" fill="#ffffff" />
-    {/* Beak */}
-    <polygon points="29,35 35,35 32,41" fill="#f59e0b" />
-    {/* Graduation / Professor Cap tassel */}
-    <polygon points="32,6 48,12 32,18 16,12" fill="#1e293b" />
-    <polygon points="48,12 51,20 49,20 47,12" fill="#eab308" />
+    {/* Background Soft Glow */}
+    <circle cx="32" cy="32" r="30" fill="#451a03" opacity="0.3" />
+
+    {/* Tweed Jacket Shoulders */}
+    <path
+      d="M 10 62 C 10 46, 18 40, 25 38 L 39 38 C 46 40, 54 46, 54 62 Z"
+      fill="#78350f"
+      stroke="#451a03"
+      strokeWidth="1.5"
+    />
+
+    {/* Tweed Herringbone Pattern Highlights */}
+    <path
+      d="M 14 56 L 18 52 M 16 60 L 20 56 M 46 52 L 50 56 M 44 56 L 48 60 M 18 48 L 22 44"
+      stroke="#92400e"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      opacity="0.6"
+    />
+
+    {/* Crisp Cream Shirt Collar */}
+    <polygon points="26,38 38,38 32,49" fill="#fef3c7" stroke="#d97706" strokeWidth="0.8" />
+
+    {/* Classic Burgundy Bow Tie */}
+    <polygon points="27,42 37,45 37,42 27,45" fill="#991b1b" />
+    <circle cx="32" cy="43.5" r="1.8" fill="#7f1d1d" stroke="#f59e0b" strokeWidth="0.5" />
+
+    {/* Tweed Jacket Lapels */}
+    <path
+      d="M 23 39 L 29 55 L 32 46 L 35 55 L 41 39"
+      fill="none"
+      stroke="#451a03"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+
+    {/* Mechanical Pocket Watch & Golden Chain */}
+    <path
+      d="M 33 53 Q 40 58 45 52"
+      fill="none"
+      stroke="#f59e0b"
+      strokeWidth="1.4"
+      strokeDasharray="1.5 1.5"
+    />
+    <circle cx="46" cy="51" r="3.2" fill="#fef08a" stroke="#b45309" strokeWidth="1" />
+    <line x1="46" y1="49.5" x2="46" y2="51" stroke="#b45309" strokeWidth="0.8" />
+    <line x1="46" y1="51" x2="47.2" y2="51" stroke="#b45309" strokeWidth="0.8" />
+
+    {/* Leather Notepad in Breast Pocket */}
+    <rect
+      x="16"
+      y="47"
+      width="7.5"
+      height="10"
+      rx="1.2"
+      fill="#3e2312"
+      stroke="#78350f"
+      strokeWidth="0.8"
+      transform="rotate(-8 19 52)"
+    />
+    <line x1="17" y1="46" x2="17" y2="50" stroke="#dc2626" strokeWidth="1.2" />
+
+    {/* Grandfather Head */}
+    <ellipse cx="32" cy="24" rx="13" ry="14" fill="#fed7aa" stroke="#78350f" strokeWidth="1.2" />
+
+    {/* Distinguished Silver Hair */}
+    <path
+      d="M 19 23 C 18 13, 23 8, 32 8 C 41 8, 46 13, 45 23 C 43 14, 38 12, 32 12 C 26 12, 21 14, 19 23 Z"
+      fill="#e2e8f0"
+      stroke="#94a3b8"
+      strokeWidth="1"
+    />
+    {/* Hair volume on sides */}
+    <path d="M 19 22 C 17 25, 18 31, 20 33" stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" />
+    <path d="M 45 22 C 47 25, 46 31, 44 33" stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" />
+
+    {/* Friendly Eyebrows */}
+    <path d="M 23 18 Q 27 16 30 19" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
+    <path d="M 41 18 Q 37 16 34 19" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
+
+    {/* Round Wire-rimmed Glasses */}
+    <circle cx="26.5" cy="23.5" r="5" stroke="#d97706" strokeWidth="1.6" fill="#ffffff" fillOpacity="0.4" />
+    <circle cx="37.5" cy="23.5" r="5" stroke="#d97706" strokeWidth="1.6" fill="#ffffff" fillOpacity="0.4" />
+    <line x1="31.5" y1="23.5" x2="32.5" y2="23.5" stroke="#d97706" strokeWidth="1.6" />
+
+    {/* Wise Eyes with sparkles */}
+    <circle cx="26.5" cy="23.5" r="2.2" fill="#1e293b" />
+    <circle cx="37.5" cy="23.5" r="2.2" fill="#1e293b" />
+    <circle cx="25.6" cy="22.6" r="0.8" fill="#ffffff" />
+    <circle cx="36.6" cy="22.6" r="0.8" fill="#ffffff" />
+
+    {/* Cheerful Grandfather Mustache */}
+    <path
+      d="M 24 30 Q 32 30 32 33 Q 32 30 40 30 Q 37 34 32 34 Q 27 34 24 30 Z"
+      fill="#f1f5f9"
+      stroke="#cbd5e1"
+      strokeWidth="0.8"
+    />
   </svg>
 );
+
+// Backward compatibility alias
+export const CoachOwlSvg = ChessProfessorSvg;
 
 export const CoachReviewBar: React.FC<CoachReviewBarProps> = ({
   history,
@@ -52,33 +133,33 @@ export const CoachReviewBar: React.FC<CoachReviewBarProps> = ({
   // Determine Coach Speech text
   const getCoachSpeech = () => {
     if (currentStepIndex < 0 || !activeMove) {
-      return 'Каждая партия чему-то учит. Посмотрим, что произошло.';
+      return '«Каждая партия — это урок. Садитесь поудобнее, откройте тетради, сейчас разберём развитие фигур и безопасность короля!»';
     }
 
     // Opening book moves
     if (currentStepIndex <= 3 || activeMove.quality === 'book') {
-      return '📖 Начало партии по дебютной книге.';
+      return '📖 «Классическое начало. Мы разбирали эту дебютную теорию на занятиях: быстрое развитие легких фигур и борьба за центр.»';
     }
 
     switch (activeMove.quality) {
       case 'brilliant':
-        return '💎 Фантастический ход! Жертва материала ради решающего перевеса.';
+        return '💎 «Браво! Эту партию нужно срочно записать в учебники для будущих гроссмейстеров.»';
       case 'best':
-        return '⭐️ Идеальный ход по первой линии движка.';
+        return '⭐️ «Превосходно! Именно так гласит классическая школа позиционной игры.»';
       case 'excellent':
       case 'good':
-        return '👍 Сильное и надежное решение.';
+        return '👍 «Добротный, надёжный ход. Фигуры гармонично развиваются, король в безопасности.»';
       case 'inaccuracy':
-        return '❓ Не самый точный ход, позиция немного усложнилась.';
+        return '❓ «Хм... Не самое дальновидное решение. Не забывайте о гармонии фигур и защите короля!»';
       case 'mistake':
       case 'blunder': {
         const recommendation = activeMove.bestMove
-          ? `пойти ${activeMove.bestMove}`
-          : 'найти более надежное продолжение';
-        return `⚠️ Опасный зевок фигуры! Лучше было ${recommendation}.`;
+          ? ` Надо было пойти ${activeMove.bestMove}.`
+          : '';
+        return `⚠️ «Ну кто так развивает фигуры? Мы же проходили это на третьем занятии!»${recommendation}`;
       }
       default:
-        return '⭐️ Идеальный ход по первой линии движка.';
+        return '⭐️ «Сильный позиционный ход по канонам шахматной школы.»';
     }
   };
 
@@ -105,11 +186,11 @@ export const CoachReviewBar: React.FC<CoachReviewBarProps> = ({
 
   return (
     <div className="w-full flex flex-col gap-3">
-      {/* 1. TOP: Coach Owl Speech Card */}
-      <div className="relative flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900/95 p-3.5 shadow-2xl backdrop-blur-md">
-        {/* Coach Owl Mascot */}
-        <div className="relative shrink-0 flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 p-1 shadow-lg shadow-emerald-950/40">
-          <CoachOwlSvg className="h-full w-full drop-shadow-md" />
+      {/* 1. TOP: Professor Speech Card */}
+      <div className="relative flex items-center gap-3 rounded-2xl border border-amber-900/40 bg-slate-900/95 p-3.5 shadow-2xl backdrop-blur-md">
+        {/* Professor Mascot Avatar */}
+        <div className="relative shrink-0 flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-tr from-amber-900 via-amber-800 to-amber-700 p-1 shadow-lg shadow-amber-950/40 border border-amber-600/30">
+          <ChessProfessorSvg className="h-full w-full drop-shadow-md" />
         </div>
 
         {/* White Speech Bubble */}
@@ -118,8 +199,9 @@ export const CoachReviewBar: React.FC<CoachReviewBarProps> = ({
           <div className="absolute top-4 -left-2 h-3.5 w-3.5 rotate-45 bg-white border-l border-b border-slate-200" />
 
           <div className="flex items-center justify-between gap-2 mb-1">
-            <span className="text-[11px] font-black uppercase tracking-wider text-emerald-600">
-              Тренер Сова
+            <span className="text-[11px] font-black uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
+              <span>👴🏼</span>
+              <span>Профессор шахматной школы</span>
             </span>
             <span className="text-[11px] text-slate-500 font-mono">
               {currentStepIndex >= 0
