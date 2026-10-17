@@ -1,5 +1,5 @@
 import React from 'react';
-import { Volume2, VolumeX, RotateCw, Settings, FileText, Plus, Box, Layers, Sparkles } from 'lucide-react';
+import { Volume2, VolumeX, RotateCw, Settings, FileText, Plus, Box, Layers, Sparkles, Navigation } from 'lucide-react';
 
 interface NavbarProps {
   viewMode: '2d' | '3d';
@@ -8,6 +8,8 @@ interface NavbarProps {
   onFlipBoard: () => void;
   soundEnabled: boolean;
   onToggleSound: () => void;
+  showArrows: boolean;
+  onToggleArrows: () => void;
   onOpenSettings: () => void;
   onOpenFenPgn: () => void;
   onOpenReview: () => void;
@@ -21,6 +23,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onFlipBoard,
   soundEnabled,
   onToggleSound,
+  showArrows,
+  onToggleArrows,
   onOpenSettings,
   onOpenFenPgn,
   onOpenReview,
@@ -85,6 +89,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           title={soundEnabled ? 'Отключить звук' : 'Включить звук'}
         >
           {soundEnabled ? <Volume2 className="h-4 w-4 text-cyan-400" /> : <VolumeX className="h-4 w-4 text-slate-500" />}
+        </button>
+
+        {/* Arrows toggle */}
+        <button
+          onClick={onToggleArrows}
+          className={`rounded-xl border p-2 transition cursor-pointer ${
+            showArrows
+              ? 'border-amber-500/40 bg-amber-950/40 text-amber-300'
+              : 'border-slate-700 bg-slate-800/80 text-slate-500 hover:bg-slate-700 hover:text-slate-300'
+          }`}
+          title={showArrows ? 'Скрыть стрелки ходов на доске' : 'Показать стрелки ходов на доске'}
+        >
+          <Navigation className={`h-4 w-4 ${showArrows ? 'text-amber-400' : 'text-slate-500'}`} />
         </button>
 
         {/* FEN / PGN */}

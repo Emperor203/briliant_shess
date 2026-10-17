@@ -95,5 +95,6 @@ export interface GameSettings {
   soundEnabled: boolean;
   showHints: boolean;
   showEvalBar: boolean;
+  showArrows: boolean;
   viewMode: '2d' | '3d';
 }

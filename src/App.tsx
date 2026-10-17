@@ -28,6 +28,7 @@ const DEFAULT_SETTINGS: GameSettings = {
   soundEnabled: true,
   showHints: true,
   showEvalBar: true,
+  showArrows: true,
   viewMode: '2d',
 };
 
@@ -531,6 +532,8 @@ export const App: React.FC = () => {
         onFlipBoard={() => setBoardFlipped(!boardFlipped)}
         soundEnabled={settings.soundEnabled}
         onToggleSound={() => saveSettings({ soundEnabled: !settings.soundEnabled })}
+        showArrows={settings.showArrows}
+        onToggleArrows={() => saveSettings({ showArrows: !settings.showArrows })}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenFenPgn={() => setIsFenPgnOpen(true)}
         onOpenReview={() => setIsReviewOpen(true)}
@@ -589,7 +592,7 @@ export const App: React.FC = () => {
                   flipped={boardFlipped}
                   onMove={executeMove}
                   lastAnalysis={lastMoveAnalysis}
-                  arrows={boardArrows}
+                  arrows={settings.showArrows ? boardArrows : []}
                   disabled={isBotThinking || isBrowsingHistory || (chess.turn() !== resolvedPlayerColor && !chess.isGameOver())}
                 />
               ) : (
