@@ -448,6 +448,24 @@ export const App: React.FC = () => {
   const activeTheme = BOARD_THEMES[settings.boardTheme] || BOARD_THEMES.classic;
   const currentBot = BOT_DIFFICULTIES.find((b) => b.level === settings.botLevel) || BOT_DIFFICULTIES[3];
   const lastMoveAnalysis = history.length > 0 && currentStepIndex >= 0 ? history[currentStepIndex] : undefined;
+  const isBrowsingHistory = history.length > 0 && currentStepIndex < history.length - 1;
+
+  // Active arrows to display on the board
+  const boardArrows: BoardArrow[] = React.useMemo(() => {
+    const list: BoardArrow[] = [];
+    if (analysisArrow) {
+      list.push(analysisArrow);
+    }
+    // Show arrow for the move being viewed in history
+    if (lastMoveAnalysis) {
+      list.push({
+        from: lastMoveAnalysis.from,
+        to: lastMoveAnalysis.to,
+        color: '#f59e0b', // Vibrant gold arrow showing move trajectory
+      });
+    }
+    return list;
+  }, [analysisArrow, lastMoveAnalysis]);
 
   // Bot vs Player cards
   const topPlayer = boardFlipped ? (
@@ -526,6 +544,30 @@ export const App: React.FC = () => {
           {/* Top Player Card */}
           <div className="w-full mb-2.5">{topPlayer}</div>
 
+          {/* Browsing Old Move Notification Banner */}
+          {isBrowsingHistory && (
+            <div className="w-full mb-2.5 flex items-center justify-between rounded-xl border border-amber-500/50 bg-amber-950/80 px-3.5 py-2 text-xs font-medium text-amber-200 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-1">
+              <div className="flex items-center gap-2">
+                <span className="flex h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
+                <span>
+                  Просмотр истории:{' '}
+                  <strong className="text-amber-100">
+                    {currentStepIndex >= 0 && history[currentStepIndex]
+                      ? `Ход ${Math.floor(currentStepIndex / 2) + 1}. ${history[currentStepIndex].color === 'w' ? 'Белые' : 'Черные'} (${history[currentStepIndex].san})`
+                      : 'Начальная позиция'}
+                  </strong>
+                </span>
+              </div>
+              <button
+                onClick={() => handleJumpToStep(history.length - 1)}
+                className="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-3 py-1 text-xs font-bold text-white shadow-md transition cursor-pointer"
+              >
+                <span>Вернуться в игру</span>
+                <span className="h-2 w-2 rounded-full bg-red-400 animate-pulse" />
+              </button>
+            </div>
+          )}
+
           {/* Board + Side Eval Bar Container */}
           <div className="relative flex items-center justify-center w-full gap-2.5">
             {/* Live Stockfish Evaluation Bar */}
@@ -547,8 +589,8 @@ export const App: React.FC = () => {
                   flipped={boardFlipped}
                   onMove={executeMove}
                   lastAnalysis={lastMoveAnalysis}
-                  arrows={analysisArrow ? [analysisArrow] : []}
-                  disabled={isBotThinking || (chess.turn() !== resolvedPlayerColor && !chess.isGameOver())}
+                  arrows={boardArrows}
+                  disabled={isBotThinking || isBrowsingHistory || (chess.turn() !== resolvedPlayerColor && !chess.isGameOver())}
                 />
               ) : (
                 <Chessboard3D
@@ -558,7 +600,7 @@ export const App: React.FC = () => {
                   flipped={boardFlipped}
                   onMove={executeMove}
                   lastAnalysis={lastMoveAnalysis}
-                  disabled={isBotThinking || (chess.turn() !== resolvedPlayerColor && !chess.isGameOver())}
+                  disabled={isBotThinking || isBrowsingHistory || (chess.turn() !== resolvedPlayerColor && !chess.isGameOver())}
                 />
               )}
             </div>
