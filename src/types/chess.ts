@@ -97,5 +97,6 @@ export interface GameSettings {
   showHints: boolean;
   showEvalBar: boolean;
   showArrows: boolean;
+  showPet: boolean;
   viewMode: '2d' | '3d';
 }

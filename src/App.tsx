@@ -19,6 +19,7 @@ import { stockfish } from './services/stockfish';
 import type { EngineEvaluation } from './services/stockfish';
 import { classifyMove } from './services/classifier';
 import { Flag, RotateCcw } from 'lucide-react';
+import { PawnPetCompanion } from './components/PawnPetCompanion';
 
 const DEFAULT_SETTINGS: GameSettings = {
   boardTheme: 'classic',
@@ -30,6 +31,7 @@ const DEFAULT_SETTINGS: GameSettings = {
   showHints: true,
   showEvalBar: true,
   showArrows: true,
+  showPet: true,
   viewMode: '2d',
 };
 
@@ -73,6 +75,7 @@ export const App: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isFenPgnOpen, setIsFenPgnOpen] = useState(false);
   const [isReviewMode, setIsReviewMode] = useState(false);
+  const [isMobilePetOpen, setIsMobilePetOpen] = useState(false);
   const [gameOver, setGameOver] = useState<{
     isOpen: boolean;
     winner: 'w' | 'b' | 'draw' | null;
@@ -566,7 +569,20 @@ export const App: React.FC = () => {
       />
 
       {/* Main Game Arena */}
-      <main className={`flex-1 container mx-auto px-2 sm:px-4 py-1.5 sm:py-2 flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-6 ${isReviewMode ? 'max-w-2xl' : 'max-w-7xl'} h-[calc(100dvh-50px)] overflow-y-auto lg:overflow-hidden`}>
+      <main className={`flex-1 container mx-auto px-2 sm:px-4 py-1.5 sm:py-2 flex flex-col lg:flex-row items-center justify-center gap-3 lg:gap-5 xl:gap-6 ${isReviewMode ? 'max-w-2xl' : 'max-w-7xl'} h-[calc(100dvh-50px)] overflow-y-auto lg:overflow-hidden`}>
+        {/* Left Section: Pawn Pet Mascot (Desktop & Laptop) */}
+        {settings.showPet !== false && !isReviewMode && (
+          <aside className="hidden lg:flex flex-col items-center justify-center w-[180px] xl:w-[210px] shrink-0 self-center animate-in fade-in slide-in-from-left-4 duration-300">
+            <PawnPetCompanion
+              evaluation={evaluation}
+              playerColor={resolvedPlayerColor}
+              isBotThinking={isBotThinking}
+              gameOver={gameOver}
+              isSoundEnabled={settings.soundEnabled}
+            />
+          </aside>
+        )}
+
         {/* Left / Center Section: Board + Eval Bar + Player Cards / Coach Review */}
         <div className={`flex flex-col items-center w-full shrink-0 transition-all duration-300 ${isReviewMode ? 'max-w-[min(480px,calc(100dvh-200px))]' : 'max-w-[min(540px,calc(100dvh-150px))]'}`}>
           {/* Top section: Coach Owl Review Card OR Top Player Card */}
@@ -752,6 +768,39 @@ export const App: React.FC = () => {
         currentPgn={chess.pgn()}
         onLoadFen={handleLoadFen}
       />
+
+      {/* Mobile Floating Pawn Mascot Trigger */}
+      {settings.showPet !== false && !isReviewMode && (
+        <div className="lg:hidden fixed bottom-3 left-3 z-30">
+          <button
+            onClick={() => setIsMobilePetOpen(!isMobilePetOpen)}
+            className="flex items-center gap-1.5 rounded-full border border-amber-400/50 bg-slate-900/95 px-3 py-1.5 shadow-2xl backdrop-blur-md text-xs font-bold text-amber-300 cursor-pointer active:scale-95 transition-transform"
+          >
+            <span className="text-base">♟️</span>
+            <span>Талисман</span>
+            <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          </button>
+          {isMobilePetOpen && (
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
+              <div className="relative w-full max-w-xs">
+                <button
+                  onClick={() => setIsMobilePetOpen(false)}
+                  className="absolute -top-3 -right-3 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-slate-800 border border-slate-700 text-slate-300 hover:text-white"
+                >
+                  ✕
+                </button>
+                <PawnPetCompanion
+                  evaluation={evaluation}
+                  playerColor={resolvedPlayerColor}
+                  isBotThinking={isBotThinking}
+                  gameOver={gameOver}
+                  isSoundEnabled={settings.soundEnabled}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <GameOverModal
         isOpen={gameOver.isOpen}
