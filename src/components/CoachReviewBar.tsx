@@ -15,67 +15,58 @@ interface CoachReviewBarProps {
 export const ChessProfessorSvg: React.FC<{ className?: string }> = ({ className = 'w-12 h-12' }) => (
   <svg viewBox="0 0 64 64" className={className} fill="none">
     {/* Background Soft Glow */}
-    <circle cx="32" cy="32" r="30" fill="#451a03" opacity="0.3" />
+    <circle cx="32" cy="32" r="30" fill="#334155" opacity="0.3" />
 
-    {/* Tweed Jacket Shoulders */}
+    {/* Gray Courtyard Jacket / Wool Sweater Shoulders */}
     <path
       d="M 10 62 C 10 46, 18 40, 25 38 L 39 38 C 46 40, 54 46, 54 62 Z"
-      fill="#78350f"
-      stroke="#451a03"
+      fill="#475569"
+      stroke="#1e293b"
       strokeWidth="1.5"
     />
 
-    {/* Tweed Herringbone Pattern Highlights */}
+    {/* Sweater Knitted Ribs / Texture */}
     <path
       d="M 14 56 L 18 52 M 16 60 L 20 56 M 46 52 L 50 56 M 44 56 L 48 60 M 18 48 L 22 44"
-      stroke="#92400e"
+      stroke="#64748b"
       strokeWidth="1.2"
       strokeLinecap="round"
-      opacity="0.6"
+      opacity="0.7"
     />
 
-    {/* Crisp Cream Shirt Collar */}
-    <polygon points="26,38 38,38 32,49" fill="#fef3c7" stroke="#d97706" strokeWidth="0.8" />
-
-    {/* Classic Burgundy Bow Tie */}
-    <polygon points="27,42 37,45 37,42 27,45" fill="#991b1b" />
-    <circle cx="32" cy="43.5" r="1.8" fill="#7f1d1d" stroke="#f59e0b" strokeWidth="0.5" />
-
-    {/* Tweed Jacket Lapels */}
+    {/* Cozy Gray Knitted High Collar */}
     <path
-      d="M 23 39 L 29 55 L 32 46 L 35 55 L 41 39"
-      fill="none"
-      stroke="#451a03"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M 24 37 L 40 37 L 38 48 L 26 48 Z"
+      fill="#334155"
+      stroke="#1e293b"
+      strokeWidth="1.2"
     />
+    {/* Ribbed lines on collar */}
+    <line x1="28" y1="37" x2="28" y2="48" stroke="#64748b" strokeWidth="0.8" />
+    <line x1="32" y1="37" x2="32" y2="48" stroke="#94a3b8" strokeWidth="1" />
+    <line x1="36" y1="37" x2="36" y2="48" stroke="#64748b" strokeWidth="0.8" />
 
-    {/* Mechanical Pocket Watch & Golden Chain */}
-    <path
-      d="M 33 53 Q 40 58 45 52"
-      fill="none"
-      stroke="#f59e0b"
-      strokeWidth="1.4"
-      strokeDasharray="1.5 1.5"
-    />
-    <circle cx="46" cy="51" r="3.2" fill="#fef08a" stroke="#b45309" strokeWidth="1" />
-    <line x1="46" y1="49.5" x2="46" y2="51" stroke="#b45309" strokeWidth="0.8" />
-    <line x1="46" y1="51" x2="47.2" y2="51" stroke="#b45309" strokeWidth="0.8" />
+    {/* Sweater Zipper / Placket */}
+    <line x1="32" y1="48" x2="32" y2="62" stroke="#1e293b" strokeWidth="1.8" />
+    <line x1="32" y1="48" x2="32" y2="62" stroke="#94a3b8" strokeWidth="0.8" strokeDasharray="2 1.5" />
+    {/* Metal zipper pull */}
+    <rect x="30.8" y="47.5" width="2.4" height="4" rx="0.8" fill="#cbd5e1" stroke="#475569" strokeWidth="0.5" />
 
-    {/* Leather Notepad in Breast Pocket */}
+    {/* Newspaper in Pocket ("Советский спорт" / Шахматная газета) */}
     <rect
-      x="16"
+      x="15"
       y="47"
-      width="7.5"
-      height="10"
+      width="8"
+      height="12"
       rx="1.2"
-      fill="#3e2312"
-      stroke="#78350f"
+      fill="#e2e8f0"
+      stroke="#64748b"
       strokeWidth="0.8"
-      transform="rotate(-8 19 52)"
+      transform="rotate(-8 19 53)"
     />
-    <line x1="17" y1="46" x2="17" y2="50" stroke="#dc2626" strokeWidth="1.2" />
+    <line x1="16" y1="47" x2="21" y2="47" stroke="#dc2626" strokeWidth="1" transform="rotate(-8 19 53)" />
+    <line x1="16" y1="50" x2="21" y2="50" stroke="#475569" strokeWidth="0.8" transform="rotate(-8 19 53)" />
+    <line x1="16" y1="53" x2="21" y2="53" stroke="#94a3b8" strokeWidth="0.8" transform="rotate(-8 19 53)" />
 
     {/* Grandfather Head */}
     <ellipse cx="32" cy="24" rx="13" ry="14" fill="#fed7aa" stroke="#78350f" strokeWidth="1.2" />
@@ -297,8 +288,8 @@ export const CoachReviewBar: React.FC<CoachReviewBarProps> = ({
     <div className="w-full flex flex-col gap-2 sm:gap-3">
       {/* 1. TOP: Professor Speech Card */}
       <div className="relative flex items-center gap-2 sm:gap-3 rounded-2xl border border-amber-900/40 bg-slate-900/95 p-2 sm:p-3.5 shadow-2xl backdrop-blur-md">
-        {/* Professor Mascot Avatar */}
-        <div className="relative shrink-0 flex items-center justify-center h-10 w-10 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-amber-900 via-amber-800 to-amber-700 p-0.5 sm:p-1 shadow-lg shadow-amber-950/40 border border-amber-600/30">
+        {/* Grandfather Mascot Avatar */}
+        <div className="relative shrink-0 flex items-center justify-center h-10 w-10 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-slate-800 via-slate-700 to-amber-950/70 p-0.5 sm:p-1 shadow-lg shadow-slate-950/40 border border-slate-600/40">
           <ChessProfessorSvg className="h-full w-full drop-shadow-md" />
         </div>
 
@@ -308,9 +299,9 @@ export const CoachReviewBar: React.FC<CoachReviewBarProps> = ({
           <div className="absolute top-3.5 -left-1.5 sm:top-4 sm:-left-2 h-3 w-3 sm:h-3.5 sm:w-3.5 rotate-45 bg-white border-l border-b border-slate-200" />
 
           <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
-            <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-amber-800 flex items-center gap-1.5 truncate">
+            <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-amber-800 flex items-center gap-1 shrink-0">
               <span>👴🏼</span>
-              <span className="truncate">Дед Михалыч (со двора)</span>
+              <span>Дед Михалыч</span>
             </span>
             <span className="text-[10px] sm:text-[11px] text-slate-500 font-mono shrink-0">
               {currentStepIndex >= 0
