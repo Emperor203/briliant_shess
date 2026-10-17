@@ -295,7 +295,7 @@ export const App: React.FC = () => {
           evaluation.bestMove
         );
 
-        if (classification.quality === 'blunder') {
+        if (classification.quality === 'blunder' || classification.quality === 'mistake') {
           sounds.playBlunder();
         }
 

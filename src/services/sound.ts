@@ -3,9 +3,17 @@
 class SoundManager {
   private ctx: AudioContext | null = null;
   private enabled: boolean = true;
+  private blunderAudio: HTMLAudioElement | null = null;
 
   constructor() {
-    // AudioContext will be initialized on first user interaction
+    if (typeof window !== 'undefined') {
+      try {
+        this.blunderAudio = new Audio('/sounds/blunder.mp3');
+        this.blunderAudio.preload = 'auto';
+      } catch {
+        // Ignore pre-load error
+      }
+    }
   }
 
   private initContext() {
@@ -187,28 +195,40 @@ class SoundManager {
     });
   }
 
-  // Blunder warning sound
+  // Blunder / Error warning sound (Custom audio effect)
   public playBlunder() {
     if (!this.enabled) return;
-    this.initContext();
-    if (!this.ctx) return;
-
-    const t = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(220, t);
-    osc.frequency.linearRampToValueAtTime(140, t + 0.25);
-
-    gain.gain.setValueAtTime(0.2, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start(t);
-    osc.stop(t + 0.3);
+    try {
+      if (this.blunderAudio) {
+        this.blunderAudio.currentTime = 0;
+        const playPromise = this.blunderAudio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            const fallback = new Audio('/sounds/blunder.mp3');
+            fallback.play().catch(() => {});
+          });
+        }
+        return;
+      }
+      const audio = new Audio('/sounds/blunder.mp3');
+      audio.play().catch(() => {});
+    } catch {
+      // Fallback synthesizer
+      this.initContext();
+      if (!this.ctx) return;
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(200, t);
+      osc.frequency.linearRampToValueAtTime(110, t + 0.25);
+      gain.gain.setValueAtTime(0.3, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.3);
+    }
   }
 
   // Noise generator for physical wood texture
