@@ -107,12 +107,16 @@ function renderStauntonPiece(type: string, isWhite: boolean, className: string) 
   const fill = isWhite ? '#ffffff' : '#1e1e1e';
   const stroke = isWhite ? '#000000' : '#000000';
   const innerLine = isWhite ? '#000000' : '#ffffff';
+  // Add subtle light edge filter to black pieces so they are clearly visible on any dark background
+  const pieceFilter = !isWhite
+    ? { filter: 'drop-shadow(0 0 1.2px rgba(255, 255, 255, 0.75)) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5))' }
+    : { filter: 'drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3))' };
 
   switch (type) {
     case 'p':
       // Pawn
       return (
-        <svg viewBox="0 0 45 45" className={className}>
+        <svg viewBox="0 0 45 45" className={className} style={pieceFilter}>
           <path
             d="m 22.5,9 c -2.21,0 -4,1.79 -4,4 0,0.89 0.29,1.71 0.78,2.38 C 17.33,16.5 16,18.59 16,21 c 0,2.03 0.94,3.84 2.41,5.03 C 15.41,27.09 11,31.58 11,39.5 l 23,0 c 0,-7.92 -4.41,-12.41 -7.41,-13.47 1.47,-1.19 2.41,-3 2.41,-5.03 0,-2.41 -1.33,-4.5 -3.28,-5.62 c 0.49,-0.67 0.78,-1.49 0.78,-2.38 0,-2.21 -1.79,-4 -4,-4 z"
             fill={fill}
@@ -120,13 +124,21 @@ function renderStauntonPiece(type: string, isWhite: boolean, className: string) 
             strokeWidth="1.5"
             strokeLinecap="round"
           />
+          {!isWhite && (
+            <path
+              d="M 12,36 C 14,33.5 17,32.5 22.5,32.5 C 28,32.5 31,33.5 33,36"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="1"
+            />
+          )}
         </svg>
       );
 
     case 'r':
       // Rook
       return (
-        <svg viewBox="0 0 45 45" className={className}>
+        <svg viewBox="0 0 45 45" className={className} style={pieceFilter}>
           <g fill={fill} stroke={stroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M 9,39 L 36,39 L 36,36 L 9,36 z" />
             <path d="M 12,36 L 12,32 L 33,32 L 33,36 z" />
@@ -145,7 +157,7 @@ function renderStauntonPiece(type: string, isWhite: boolean, className: string) 
     case 'n':
       // Knight (Standard beautiful horse)
       return (
-        <svg viewBox="0 0 45 45" className={className}>
+        <svg viewBox="0 0 45 45" className={className} style={pieceFilter}>
           <g fill={fill} stroke={stroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" />
             <path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,7.4 17.07,8.07 18,9 C 18.06,8.5 19.38,6.8 20.5,8 C 21.62,9.2 21.25,10.1 22,10 z" />
@@ -173,7 +185,7 @@ function renderStauntonPiece(type: string, isWhite: boolean, className: string) 
     case 'b':
       // Bishop
       return (
-        <svg viewBox="0 0 45 45" className={className}>
+        <svg viewBox="0 0 45 45" className={className} style={pieceFilter}>
           <g fill={fill} stroke={stroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M 9,36 C 12.39,35.03 19.11,36.43 22.5,34 C 25.89,36.43 32.61,35.03 36,36 C 36,36 37.65,36.54 39,38 C 38.32,38.97 37.35,38.99 36,38.5 C 32.61,37.53 25.89,38.96 22.5,37 C 19.11,38.96 12.39,37.53 9,38.5 C 7.65,38.99 6.68,38.97 6,38 C 7.35,36.54 9,36 9,36 z" />
             <path d="M 15,32 C 17.5,34.5 27.5,34.5 30,32 C 30.5,30.5 30,30 30,30 C 30,27.5 27.5,26 27.5,26 C 33,24.5 33.5,14.5 22.5,10.5 C 11.5,14.5 12,24.5 17.5,26 C 17.5,26 15,27.5 15,30 C 15,30 14.5,30.5 15,32 z" />
@@ -187,7 +199,7 @@ function renderStauntonPiece(type: string, isWhite: boolean, className: string) 
     case 'q':
       // Queen
       return (
-        <svg viewBox="0 0 45 45" className={className}>
+        <svg viewBox="0 0 45 45" className={className} style={pieceFilter}>
           <g fill={fill} stroke={stroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M 9 13 A 2 2 0 1 1 5,13 A 2 2 0 1 1 9 13 z" />
             <path d="M 16 9.5 A 2 2 0 1 1 12,9.5 A 2 2 0 1 1 16 9.5 z" />
@@ -207,7 +219,7 @@ function renderStauntonPiece(type: string, isWhite: boolean, className: string) 
     case 'k':
       // King
       return (
-        <svg viewBox="0 0 45 45" className={className}>
+        <svg viewBox="0 0 45 45" className={className} style={pieceFilter}>
           <g fill={fill} stroke={stroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             {/* Maltese Cross */}
             <path d="M 22.5,11.63 L 22.5,6 M 20,8 L 25,8" stroke={stroke} strokeWidth="1.5" />

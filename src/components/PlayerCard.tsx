@@ -40,8 +40,8 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
     <div
       className={`flex items-center justify-between rounded-xl border p-3 transition-all duration-200 ${
         isActive
-          ? 'border-cyan-500/60 bg-slate-900/90 shadow-lg shadow-cyan-950/30 ring-1 ring-cyan-500/30'
-          : 'border-slate-800 bg-slate-950/70 text-slate-400'
+          ? 'border-cyan-500/60 bg-slate-800/95 shadow-lg shadow-cyan-950/40 ring-2 ring-cyan-500/30'
+          : 'border-slate-700/80 bg-slate-850 bg-slate-800/85 text-slate-300'
       }`}
     >
       {/* Player identity */}
@@ -49,15 +49,15 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
         <div
           className={`relative flex h-10 w-10 items-center justify-center rounded-xl border shadow-inner ${
             isBot
-              ? 'border-cyan-500/40 bg-cyan-950/50 text-cyan-400'
-              : 'border-emerald-500/40 bg-emerald-950/50 text-emerald-400'
+              ? 'border-cyan-500/40 bg-cyan-950/60 text-cyan-400'
+              : 'border-emerald-500/40 bg-emerald-950/60 text-emerald-400'
           }`}
         >
           {isBot ? <Bot className="h-5 w-5" /> : <User className="h-5 w-5" />}
           {/* Color marker tag */}
           <span
-            className={`absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border border-slate-900 ${
-              color === 'w' ? 'bg-white' : 'bg-slate-800'
+            className={`absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border border-slate-700 shadow-sm ${
+              color === 'w' ? 'bg-white' : 'bg-slate-900 ring-1 ring-white/50'
             }`}
           />
         </div>
@@ -66,21 +66,27 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
           <div className="flex items-center gap-2">
             <span className="font-semibold text-sm text-slate-100">{name}</span>
             {rating && (
-              <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[11px] font-mono text-slate-400">
+              <span className="rounded bg-slate-700/80 border border-slate-600/50 px-1.5 py-0.5 text-[11px] font-mono text-slate-300">
                 {rating}
               </span>
             )}
           </div>
 
           {/* Captured pieces tray */}
-          <div className="mt-0.5 flex items-center gap-0.5 min-h-[18px]">
-            {capturedPieces.map((p, idx) => (
-              <div key={idx} className="h-4 w-4">
-                <PieceSvg type={p} color={color === 'w' ? 'b' : 'w'} styleId={pieceStyle} />
+          <div className="mt-1 flex items-center gap-1 min-h-[22px]">
+            {capturedPieces.length > 0 ? (
+              <div className="flex items-center gap-0.5 rounded-lg bg-slate-900/90 border border-slate-700/80 px-2 py-0.5 shadow-inner">
+                {capturedPieces.map((p, idx) => (
+                  <div key={idx} className="h-4.5 w-4.5 drop-shadow-sm hover:scale-125 transition-transform">
+                    <PieceSvg type={p} color={color === 'w' ? 'b' : 'w'} styleId={pieceStyle} />
+                  </div>
+                ))}
+                {materialDifference > 0 && (
+                  <span className="ml-1 text-[11px] font-bold text-amber-400">+{materialDifference}</span>
+                )}
               </div>
-            ))}
-            {materialDifference > 0 && (
-              <span className="ml-1 text-[11px] font-bold text-slate-400">+{materialDifference}</span>
+            ) : (
+              <span className="text-[11px] text-slate-400/80 font-medium italic">Нет взятых фигур</span>
             )}
           </div>
         </div>
