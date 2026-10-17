@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { EngineEvaluation } from '../services/stockfish';
 import { Sparkles, RefreshCw, Trophy, AlertTriangle, HelpCircle } from 'lucide-react';
 import { sounds } from '../services/sound';
@@ -102,6 +102,42 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
   // Quote State
   const [speech, setSpeech] = useState<string>('Привет! Я твой шахматный талисман. Погнали побеждать! ♟️');
   const [isBouncing, setIsBouncing] = useState(false);
+
+  // Mouse Eye Tracking State
+  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!svgRef.current) return;
+      const rect = svgRef.current.getBoundingClientRect();
+      const faceCenterX = rect.left + rect.width * 0.5;
+      const faceCenterY = rect.top + rect.height * 0.35; // Head/eyes center
+
+      const deltaX = e.clientX - faceCenterX;
+      const deltaY = e.clientY - faceCenterY;
+      const dist = Math.hypot(deltaX, deltaY);
+
+      if (dist < 2) {
+        setMouseOffset({ x: 0, y: 0 });
+        return;
+      }
+
+      // Max eye deflection inside the sclera
+      const maxShiftX = 2.5;
+      const maxShiftY = 2.2;
+      const angle = Math.atan2(deltaY, deltaX);
+      const intensity = Math.min(1, dist / 280);
+
+      setMouseOffset({
+        x: Math.cos(angle) * maxShiftX * intensity,
+        y: Math.sin(angle) * maxShiftY * intensity,
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   // Update speech when mood changes
   useEffect(() => {
@@ -266,6 +302,7 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
 
         {/* Vector SVG Pawn Mascot (Large & Symmetrical) */}
         <svg
+          ref={svgRef}
           viewBox="0 0 100 125"
           className="relative h-44 w-44 sm:h-52 sm:w-52 drop-shadow-[0_15px_25px_rgba(0,0,0,0.7)]"
         >
@@ -387,8 +424,8 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
 
           {/* Dynamic Facial Features by Mood */}
           {mood === 'happy' || mood === 'victory' ? (
-            /* Joyful laughing arc eyes (^ ^) and beaming smile */
-            <g>
+            /* Joyful laughing arc eyes (^ ^) slightly turning towards cursor and beaming smile */
+            <g transform={`translate(${mouseOffset.x * 0.4}, ${mouseOffset.y * 0.4})`}>
               {/* Cheerful curved laughing eyes (Symmetrical: 50 ± 11) */}
               <path
                 d="M 33 42 Q 39 34 45 42"
@@ -432,7 +469,7 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
               <circle cx="83" cy="59" r="3.5" fill="#fde047" stroke="#78350f" strokeWidth="1" />
             </g>
           ) : mood === 'sad' || mood === 'defeat' ? (
-            /* Sad worried eyes and trembling mouth */
+            /* Sad worried eyes looking towards cursor and trembling mouth */
             <g>
               {/* Sad tilted eyebrows */}
               <path
@@ -452,10 +489,12 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
               {/* Big teary puppy eyes (Symmetrical: 50 ± 11) */}
               <ellipse cx="39" cy="42" rx="6.5" ry="7.5" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
               <ellipse cx="61" cy="42" rx="6.5" ry="7.5" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
-              <circle cx="39" cy="44" r="4.2" fill="#451a03" />
-              <circle cx="61" cy="44" r="4.2" fill="#451a03" />
-              <circle cx="38" cy="42.5" r="1.6" fill="#bae6fd" />
-              <circle cx="60" cy="42.5" r="1.6" fill="#bae6fd" />
+
+              {/* Pupils dynamically tracking cursor */}
+              <circle cx={39 + mouseOffset.x} cy={43 + mouseOffset.y} r="4.2" fill="#451a03" />
+              <circle cx={61 + mouseOffset.x} cy={43 + mouseOffset.y} r="4.2" fill="#451a03" />
+              <circle cx={39 + mouseOffset.x - 1} cy={41.5 + mouseOffset.y} r="1.6" fill="#bae6fd" />
+              <circle cx={61 + mouseOffset.x - 1} cy={41.5 + mouseOffset.y} r="1.6" fill="#bae6fd" />
 
               {/* Smooth glistening tear drop on left cheek */}
               <path
@@ -474,7 +513,7 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
               />
             </g>
           ) : (
-            /* Thoughtful / Contemplative: Clean big curious eyes looking up (NO GLASSES!) */
+            /* Thoughtful / Contemplative: Eyes dynamically tracking mouse cursor! */
             <g>
               {/* Inquisitive eyebrows */}
               <path
@@ -496,15 +535,15 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
               <ellipse cx="39" cy="41" rx="6.5" ry="7.5" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
               <ellipse cx="61" cy="41" rx="6.5" ry="7.5" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
 
-              {/* Pupils looking slightly up & right */}
-              <circle cx="41" cy="39" r="4.5" fill="#451a03" />
-              <circle cx="63" cy="39" r="4.5" fill="#451a03" />
+              {/* Pupils dynamically looking towards the mouse cursor! */}
+              <circle cx={39 + mouseOffset.x} cy={41 + mouseOffset.y} r="4.3" fill="#451a03" />
+              <circle cx={61 + mouseOffset.x} cy={41 + mouseOffset.y} r="4.3" fill="#451a03" />
 
-              {/* Light glints in eyes */}
-              <circle cx="42.5" cy="37.5" r="1.6" fill="#ffffff" />
-              <circle cx="64.5" cy="37.5" r="1.6" fill="#ffffff" />
-              <circle cx="39.5" cy="41" r="0.8" fill="#ffffff" />
-              <circle cx="61.5" cy="41" r="0.8" fill="#ffffff" />
+              {/* Light glints in eyes moving smoothly with pupils */}
+              <circle cx={39 + mouseOffset.x + 1.4} cy={41 + mouseOffset.y - 1.4} r="1.6" fill="#ffffff" />
+              <circle cx={61 + mouseOffset.x + 1.4} cy={41 + mouseOffset.y - 1.4} r="1.6" fill="#ffffff" />
+              <circle cx={39 + mouseOffset.x - 1.2} cy={41 + mouseOffset.y + 1.4} r="0.8" fill="#ffffff" />
+              <circle cx={61 + mouseOffset.x - 1.2} cy={41 + mouseOffset.y + 1.4} r="0.8" fill="#ffffff" />
 
               {/* Subtle curious slight smile */}
               <path
