@@ -560,14 +560,15 @@ export const App: React.FC = () => {
         onOpenReview={() => {
           setIsReviewMode(true);
           handleJumpToStep(-1);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onNewGame={() => startNewGame()}
       />
 
       {/* Main Game Arena */}
-      <main className="flex-1 container mx-auto p-3 sm:p-5 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6 max-w-7xl">
+      <main className={`flex-1 container mx-auto p-3 sm:p-5 flex flex-col lg:flex-row items-center justify-center gap-6 ${isReviewMode ? 'max-w-2xl' : 'max-w-7xl'}`}>
         {/* Left / Center Section: Board + Eval Bar + Player Cards / Coach Review */}
-        <div className="flex flex-col items-center w-full max-w-[620px]">
+        <div className={`flex flex-col items-center w-full transition-all duration-300 ${isReviewMode ? 'max-w-[480px]' : 'max-w-[620px]'}`}>
           {/* Top section: Coach Owl Review Card OR Top Player Card */}
           {isReviewMode ? (
             <div className="w-full mb-2.5">
@@ -619,7 +620,7 @@ export const App: React.FC = () => {
               <EvaluationBar
                 evaluation={evaluation}
                 flipped={boardFlipped}
-                className="w-7 h-[420px] sm:h-[540px] shrink-0"
+                className={`w-7 shrink-0 transition-all duration-300 ${isReviewMode ? 'h-[350px] sm:h-[450px]' : 'h-[420px] sm:h-[540px]'}`}
               />
             )}
 
@@ -673,8 +674,9 @@ export const App: React.FC = () => {
           )}
         </div>
 
-        {/* Right Section: Move History, PGN & Quick Controls */}
-        <div className="w-full lg:w-[380px] flex flex-col gap-4">
+        {/* Right Section: Move History, PGN & Quick Controls (Hidden during Coach Review) */}
+        {!isReviewMode && (
+          <div className="w-full lg:w-[380px] flex flex-col gap-4">
           {/* Move History Table */}
           <MoveHistory
             history={history}
@@ -731,6 +733,7 @@ export const App: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
       </main>
 
       {/* Modals */}
@@ -761,6 +764,7 @@ export const App: React.FC = () => {
         onOpenReview={() => {
           setIsReviewMode(true);
           handleJumpToStep(-1);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />
     </div>

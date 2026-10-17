@@ -133,15 +133,32 @@ export const CoachReviewBar: React.FC<CoachReviewBarProps> = ({
           </p>
         </div>
 
-        {/* Exit Review Button */}
-        <button
-          onClick={onExitReview}
-          className="shrink-0 flex items-center gap-1 rounded-xl border border-slate-700 bg-slate-800/80 px-2.5 py-1.5 text-xs font-bold text-slate-300 hover:bg-red-950/40 hover:border-red-500/50 hover:text-red-300 transition cursor-pointer"
-          title="Завершить разбор и вернуться к игре (Esc)"
-        >
-          <X className="h-4 w-4" />
-          <span className="hidden sm:inline">Выйти</span>
-        </button>
+        {/* Action Buttons inside Coach Card */}
+        <div className="shrink-0 flex items-center gap-1.5">
+          <button
+            onClick={() => onJumpToStep(Math.max(-1, currentStepIndex - 1))}
+            disabled={currentStepIndex <= -1}
+            className="p-1.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer shadow-sm"
+            title="Назад на 1 ход (←)"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => onJumpToStep(Math.min(history.length - 1, currentStepIndex + 1))}
+            disabled={currentStepIndex >= history.length - 1}
+            className="p-1.5 rounded-xl bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer shadow-md shadow-blue-900/40"
+            title="Далее (→)"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+          <button
+            onClick={onExitReview}
+            className="p-1.5 rounded-xl border border-slate-700 bg-slate-800/80 text-slate-400 hover:bg-red-950/40 hover:border-red-500/50 hover:text-red-300 transition cursor-pointer ml-1"
+            title="Завершить разбор и вернуться к игре (Esc)"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
       </div>
     </div>
   );
