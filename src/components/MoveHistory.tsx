@@ -145,10 +145,10 @@ export const MoveHistory: React.FC<MoveHistoryProps> = ({
       {/* Move list table */}
       <div
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto p-1.5 space-y-0.5 font-mono text-xs max-h-[min(250px,calc(100dvh-380px))] select-none"
+        className="flex-1 overflow-y-auto p-1.5 space-y-0.5 font-mono text-xs max-h-[140px] sm:max-h-[240px] select-none"
       >
         {turns.length === 0 ? (
-          <div className="flex h-36 flex-col items-center justify-center gap-1 text-xs text-slate-500 italic">
+          <div className="flex h-20 sm:h-32 flex-col items-center justify-center gap-1 text-xs text-slate-500 italic">
             <span>Сделайте ход на доске,</span>
             <span>чтобы появилась история</span>
           </div>

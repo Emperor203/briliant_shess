@@ -112,7 +112,7 @@ export const Chessboard2D: React.FC<Chessboard2DProps> = ({
   };
 
   return (
-    <div className="relative aspect-square w-full max-h-[calc(100dvh-170px)] select-none rounded-xl p-1.5 shadow-2xl transition-colors duration-300"
+    <div className="relative aspect-square w-full max-h-[calc(100dvh-190px)] sm:max-h-[calc(100dvh-170px)] select-none rounded-lg sm:rounded-xl p-1 sm:p-1.5 shadow-2xl transition-colors duration-300"
          style={{ backgroundColor: boardTheme.boardBorder }}>
       {/* 8x8 Grid */}
       <div className="relative grid h-full w-full grid-cols-8 grid-rows-8 overflow-hidden rounded-lg">

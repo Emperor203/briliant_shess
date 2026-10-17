@@ -574,7 +574,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Game Arena */}
-      <main className={`flex-1 container mx-auto px-2 sm:px-4 py-1.5 sm:py-2 flex flex-col lg:flex-row items-center justify-center gap-3 lg:gap-5 xl:gap-6 ${isReviewMode ? 'max-w-2xl' : 'max-w-7xl'} h-[calc(100dvh-50px)] overflow-y-auto lg:overflow-hidden`}>
+      <main className={`flex-1 w-full container mx-auto px-1.5 sm:px-4 py-1 sm:py-2 flex flex-col lg:flex-row items-center justify-start lg:justify-center gap-2 sm:gap-3 lg:gap-5 xl:gap-6 ${isReviewMode ? 'max-w-2xl' : 'max-w-7xl'} h-[calc(100dvh-48px)] overflow-y-auto lg:overflow-hidden pb-8 lg:pb-0`}>
         {/* Left Section: Pawn Pet Mascot (Desktop & Laptop) */}
         {settings.showPet !== false && !isReviewMode && (
           <aside className="hidden lg:flex flex-col items-center justify-center w-[230px] xl:w-[270px] shrink-0 self-center animate-in fade-in slide-in-from-left-4 duration-300">
@@ -589,10 +589,10 @@ export const App: React.FC = () => {
         )}
 
         {/* Left / Center Section: Board + Eval Bar + Player Cards / Coach Review */}
-        <div className={`flex flex-col items-center w-full shrink-0 transition-all duration-300 ${isReviewMode ? 'max-w-[min(480px,calc(100dvh-200px))]' : 'max-w-[min(540px,calc(100dvh-150px))]'}`}>
+        <div className={`flex flex-col items-center w-full shrink-0 transition-all duration-300 ${isReviewMode ? 'max-w-[min(480px,calc(100dvh-200px))]' : 'max-w-[min(100%,540px)] lg:max-w-[min(540px,calc(100dvh-150px))]'}`}>
           {/* Top section: Coach Owl Review Card OR Top Player Card */}
           {isReviewMode ? (
-            <div className="w-full mb-1.5">
+            <div className="w-full mb-1 sm:mb-1.5">
               <CoachReviewBar
                 history={history}
                 currentStepIndex={currentStepIndex}
@@ -606,14 +606,14 @@ export const App: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="w-full mb-1.5">{topPlayer}</div>
+              <div className="w-full mb-1 sm:mb-1.5">{topPlayer}</div>
 
               {/* Browsing Old Move Notification Banner */}
               {isBrowsingHistory && (
-                <div className="w-full mb-1.5 flex items-center justify-between rounded-xl border border-amber-500/50 bg-amber-950/80 px-3 py-1.5 text-xs font-medium text-amber-200 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-1">
-                  <div className="flex items-center gap-2">
+                <div className="w-full mb-1 sm:mb-1.5 flex items-center justify-between rounded-xl border border-amber-500/50 bg-amber-950/80 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-medium text-amber-200 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-1">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-ping" />
-                    <span>
+                    <span className="truncate">
                       Просмотр истории:{' '}
                       <strong className="text-amber-100">
                         {currentStepIndex >= 0 && history[currentStepIndex]
@@ -624,9 +624,9 @@ export const App: React.FC = () => {
                   </div>
                   <button
                     onClick={() => handleJumpToStep(history.length - 1)}
-                    className="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-2.5 py-0.5 text-xs font-bold text-white shadow-md transition cursor-pointer"
+                    className="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-2.5 py-0.5 text-xs font-bold text-white shadow-md transition cursor-pointer shrink-0"
                   >
-                    <span>Вернуться в игру</span>
+                    <span>В игру</span>
                     <span className="h-2 w-2 rounded-full bg-red-400 animate-pulse" />
                   </button>
                 </div>
@@ -635,18 +635,18 @@ export const App: React.FC = () => {
           )}
 
           {/* Board + Side Eval Bar Container */}
-          <div className="relative flex items-center justify-center w-full gap-2">
+          <div className="relative flex items-center justify-center w-full gap-1.5 sm:gap-2">
             {/* Live Stockfish Evaluation Bar */}
             {settings.showEvalBar && (
               <EvaluationBar
                 evaluation={evaluation}
                 flipped={boardFlipped}
-                className="w-5 sm:w-6 self-stretch shrink-0"
+                className="w-4 sm:w-6 self-stretch shrink-0"
               />
             )}
 
             {/* Chessboard (2D or 3D) */}
-            <div className="flex-1 flex justify-center">
+            <div className="flex-1 flex justify-center min-w-0">
               {settings.viewMode === '2d' ? (
                 <Chessboard2D
                   chess={chess}
@@ -683,7 +683,7 @@ export const App: React.FC = () => {
               />
             </div>
           ) : (
-            <div className="w-full mt-1.5">{bottomPlayer}</div>
+            <div className="w-full mt-1 sm:mt-1.5">{bottomPlayer}</div>
           )}
 
           {/* Bot thinking indicator bar */}

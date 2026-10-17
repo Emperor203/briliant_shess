@@ -31,17 +31,17 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNewGame,
 }) => {
   return (
-    <header className="h-12 min-h-[48px] max-h-12 flex items-center justify-between gap-2 bg-transparent px-3 py-1 shrink-0 z-20">
+    <header className="h-12 min-h-[48px] max-h-12 flex items-center justify-between gap-1.5 sm:gap-2 bg-transparent px-2 sm:px-3 py-1 shrink-0 z-20">
       {/* Brand */}
-      <div className="flex items-center gap-2.5 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
         <img
           src="/logo.jpg"
           alt="Brilliant Chess"
-          className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl object-cover shadow-lg shadow-amber-950/50 ring-2 ring-amber-400/60 hover:scale-105 transition-transform shrink-0"
+          className="h-8 w-8 sm:h-11 sm:w-11 rounded-xl object-cover shadow-lg shadow-amber-950/50 ring-2 ring-amber-400/60 hover:scale-105 transition-transform shrink-0"
         />
         <div className="flex flex-col justify-center">
           <h1
-            className="text-xl sm:text-2xl font-black tracking-wide m-0 bg-gradient-to-r from-amber-200 via-amber-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-md select-none leading-none"
+            className="text-base sm:text-2xl font-black tracking-wide m-0 bg-gradient-to-r from-amber-200 via-amber-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-md select-none leading-none"
             style={{ fontFamily: "'Dancing Script', 'Caveat', cursive" }}
           >
             Brilliant Chess
@@ -53,22 +53,22 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Action controls */}
-      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 overflow-x-auto no-scrollbar">
+      <div className="flex-1 min-w-0 flex items-center justify-end gap-1 sm:gap-2 overflow-x-auto no-scrollbar py-0.5 pl-1">
         {/* 2D / 3D Toggle */}
         <button
           onClick={onToggleViewMode}
-          className="flex items-center gap-1.5 rounded-xl border border-cyan-500/40 bg-cyan-950/40 px-3 py-1.5 text-xs font-bold text-cyan-300 hover:bg-cyan-900/50 transition cursor-pointer shadow-sm"
+          className="flex items-center gap-1 rounded-xl border border-cyan-500/40 bg-cyan-950/40 px-2 sm:px-3 py-1 sm:py-1.5 text-xs font-bold text-cyan-300 hover:bg-cyan-900/50 transition cursor-pointer shadow-sm shrink-0"
           title="Быстрое переключение между 2D и 3D режимами"
         >
           {viewMode === '2d' ? (
             <>
-              <Box className="h-4 w-4" />
-              <span>3D Вид</span>
+              <Box className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span>3D</span>
             </>
           ) : (
             <>
-              <Layers className="h-4 w-4" />
-              <span>2D Вид</span>
+              <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span>2D</span>
             </>
           )}
         </button>
@@ -76,68 +76,68 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Flip Board */}
         <button
           onClick={onFlipBoard}
-          className="rounded-xl border border-slate-700 bg-slate-800/80 p-2 text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+          className="rounded-xl border border-slate-700 bg-slate-800/80 p-1.5 sm:p-2 text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer shrink-0"
           title="Повернуть доску"
         >
-          <RotateCw className={`h-4 w-4 transition-transform duration-300 ${flipped ? 'rotate-180' : ''}`} />
+          <RotateCw className={`h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-300 ${flipped ? 'rotate-180' : ''}`} />
         </button>
 
         {/* Sound toggle */}
         <button
           onClick={onToggleSound}
-          className="rounded-xl border border-slate-700 bg-slate-800/80 p-2 text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+          className="rounded-xl border border-slate-700 bg-slate-800/80 p-1.5 sm:p-2 text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer shrink-0"
           title={soundEnabled ? 'Отключить звук' : 'Включить звук'}
         >
-          {soundEnabled ? <Volume2 className="h-4 w-4 text-cyan-400" /> : <VolumeX className="h-4 w-4 text-slate-500" />}
+          {soundEnabled ? <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-cyan-400" /> : <VolumeX className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-500" />}
         </button>
 
         {/* Arrows toggle */}
         <button
           onClick={onToggleArrows}
-          className={`rounded-xl border p-2 transition cursor-pointer ${
+          className={`rounded-xl border p-1.5 sm:p-2 transition cursor-pointer shrink-0 ${
             showArrows
               ? 'border-amber-500/40 bg-amber-950/40 text-amber-300'
               : 'border-slate-700 bg-slate-800/80 text-slate-500 hover:bg-slate-700 hover:text-slate-300'
           }`}
           title={showArrows ? 'Скрыть стрелки ходов на доске' : 'Показать стрелки ходов на доске'}
         >
-          <Navigation className={`h-4 w-4 ${showArrows ? 'text-amber-400' : 'text-slate-500'}`} />
+          <Navigation className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${showArrows ? 'text-amber-400' : 'text-slate-500'}`} />
         </button>
 
         {/* FEN / PGN */}
         <button
           onClick={onOpenFenPgn}
-          className="rounded-xl border border-slate-700 bg-slate-800/80 p-2 text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+          className="rounded-xl border border-slate-700 bg-slate-800/80 p-1.5 sm:p-2 text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer shrink-0"
           title="Экспорт/Импорт FEN & PGN"
         >
-          <FileText className="h-4 w-4" />
+          <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         </button>
 
         {/* Game Review / Analysis */}
         <button
           onClick={onOpenReview}
-          className="flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 px-3 py-1.5 text-xs font-bold text-amber-300 hover:from-amber-500/30 hover:to-yellow-500/30 hover:border-amber-400 transition cursor-pointer shadow-sm"
+          className="flex items-center gap-1 sm:gap-1.5 rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 px-2 sm:px-3 py-1 sm:py-1.5 text-xs font-bold text-amber-300 hover:from-amber-500/30 hover:to-yellow-500/30 hover:border-amber-400 transition cursor-pointer shadow-sm shrink-0"
           title="Полный анализ и разбор партии"
         >
-          <Sparkles className="h-4 w-4 text-amber-400" />
+          <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-400" />
           <span className="hidden sm:inline">Анализ</span>
         </button>
 
         {/* Settings */}
         <button
           onClick={onOpenSettings}
-          className="rounded-xl border border-slate-700 bg-slate-800/80 p-2 text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer"
+          className="rounded-xl border border-slate-700 bg-slate-800/80 p-1.5 sm:p-2 text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer shrink-0"
           title="Настройки игры и тем"
         >
-          <Settings className="h-4 w-4" />
+          <Settings className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         </button>
 
         {/* New Game */}
         <button
           onClick={onNewGame}
-          className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 px-3.5 py-1.5 text-xs font-bold text-white shadow-md shadow-emerald-950/40 hover:from-emerald-500 hover:to-teal-400 transition cursor-pointer"
+          className="flex items-center gap-1 sm:gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-xs font-bold text-white shadow-md shadow-emerald-950/40 hover:from-emerald-500 hover:to-teal-400 transition cursor-pointer shrink-0"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           <span className="hidden sm:inline">Новая игра</span>
         </button>
       </div>

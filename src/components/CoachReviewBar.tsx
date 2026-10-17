@@ -136,28 +136,131 @@ export const CoachReviewBar: React.FC<CoachReviewBarProps> = ({
       return '«Каждая партия — это урок. Садитесь поудобнее, откройте тетради, сейчас разберём развитие фигур и безопасность короля!»';
     }
 
-    // Opening book moves
-    if (currentStepIndex <= 3 || activeMove.quality === 'book') {
-      return '📖 «Классическое начало. Мы разбирали эту дебютную теорию на занятиях: быстрое развитие легких фигур и борьба за центр.»';
+    const san = activeMove.san || '';
+    const isMate = san.includes('#');
+    const isCheck = san.includes('+');
+    const isCastle = san.startsWith('O-O');
+    const isKnight = san.startsWith('N');
+    const isBishop = san.startsWith('B');
+    const isRook = san.startsWith('R');
+
+    // Contextual seed for stable variety per move
+    const seed = (currentStepIndex * 13 + (san.charCodeAt(0) || 7) + san.length) % 100;
+
+    // 1. Checkmate
+    if (isMate) {
+      if (activeMove.quality === 'blunder' || activeMove.quality === 'mistake') {
+        return '❌ «Мат на доске! Эх, батенька, король остался без защиты в центре... О чём я твердил всю партию?!»';
+      }
+      return '🏆 «Шах и мат! Какая эстетика! Вот это концовка, сниму-ка я очки и поаплодирую стоя!»';
     }
 
+    // 2. Castling
+    if (isCastle) {
+      const castlePhrases = [
+        '🏰 «Вот! Рокировка вовремя! Король в домике, ладья на открытой вертикали — душа старого тренера радуется!»',
+        '🏰 «Королевская крепость построена! Запомните: безопасность монарха — закон дебюта!»',
+        '🏰 «Прекрасно. Спрятали короля, соединили ладьи — образцовая классическая школа!»'
+      ];
+      return castlePhrases[seed % castlePhrases.length];
+    }
+
+    // 3. Early Opening book moves
+    if (currentStepIndex <= 3 || activeMove.quality === 'book') {
+      const bookPhrases = [
+        '📖 «Классическое начало. Мы разбирали эту дебютную теорию на занятиях: быстрое развитие легких фигур и борьба за центр.»',
+        '📖 «Книжный дебютный ход! По канонам Капабланки и Алехина, без лишней самодеятельности.»',
+        '📖 «Хорошее начало партии. Развиваем коней перед слонами, готовим короля к рокировке.»',
+        '📖 «Теория разыграна по нотам. Посмотрим, кто первый собьётся с правильной тропы.»'
+      ];
+      return bookPhrases[seed % bookPhrases.length];
+    }
+
+    // 4. Check
+    if (isCheck && (activeMove.quality === 'best' || activeMove.quality === 'brilliant' || activeMove.quality === 'good' || activeMove.quality === 'excellent')) {
+      const checkPhrases = [
+        `⚔️ «Шах королю (${san})! Не давайте сопернику перевести дух, классическая школа атаки!»`,
+        `⚔️ «Шах! Держим напряжение на доске. Главное — точно рассчитать ответные угрозы соперника.»`
+      ];
+      return checkPhrases[seed % checkPhrases.length];
+    }
+
+    const rec = activeMove.bestMove ? ` Надо было пойти ${activeMove.bestMove}.` : '';
+
     switch (activeMove.quality) {
-      case 'brilliant':
-        return '💎 «Браво! Эту партию нужно срочно записать в учебники для будущих гроссмейстеров.»';
-      case 'best':
-        return '⭐️ «Превосходно! Именно так гласит классическая школа позиционной игры.»';
-      case 'excellent':
-      case 'good':
-        return '👍 «Добротный, надёжный ход. Фигуры гармонично развиваются, король в безопасности.»';
-      case 'inaccuracy':
-        return '❓ «Хм... Не самое дальновидное решение. Не забывайте о гармонии фигур и защите короля!»';
-      case 'mistake':
-      case 'blunder': {
-        const recommendation = activeMove.bestMove
-          ? ` Надо было пойти ${activeMove.bestMove}.`
-          : '';
-        return `⚠️ «Ну кто так развивает фигуры? Мы же проходили это на третьем занятии!»${recommendation}`;
+      case 'brilliant': {
+        const brilliantPhrases = [
+          '💎 «Браво! Эту партию нужно срочно записать в учебники для будущих гроссмейстеров!»',
+          '💎 «Потрясающая жертва ради инициативы! Даже у меня, старого ворчуна, перехватило дыхание!»',
+          '💎 «Блестяще! Настоящий тактический шедевр, Михаил Таль пожал бы вам руку!»',
+          '💎 «Вот она, глубина шахматной мысли! Позиция заиграла яркими красками, браво!»'
+        ];
+        return brilliantPhrases[seed % brilliantPhrases.length];
       }
+
+      case 'best': {
+        let bestPhrases = [
+          '⭐️ «Превосходно! Именно так гласит классическая школа позиционной игры.»',
+          '⭐️ «Точнейшее попадание. Компьютер думал долго, а вы нашли лучший ход сразу. Хвалю!»',
+          '⭐️ «Идеально. Ни убавить, ни прибавить — образцовый ход прямо в блокнот тренера.»',
+          '⭐️ «Никакой суеты, железная логика и абсолютный контроль ключевых полей!»',
+          '⭐️ «Очень зрелое решение. Сила шахматиста в умении делать самые естественные и сильные ходы.»'
+        ];
+        if (isKnight) {
+          bestPhrases.push('⭐️ «Конь занимает господствующую высоту в центре! Отличная позиционная работа.»');
+        } else if (isBishop) {
+          bestPhrases.push('⭐️ «Слон простреливает всю диагональ! Прекрасно развитая фигура.»');
+        } else if (isRook) {
+          bestPhrases.push('⭐️ «Ладья на открытой линии — гроза неприятельской позиции!»');
+        }
+        return bestPhrases[seed % bestPhrases.length];
+      }
+
+      case 'excellent':
+      case 'good': {
+        const goodPhrases = [
+          '👍 «Добротный, надёжный ход. Фигуры гармонично развиваются, позиция крепка.»',
+          '👍 «Хорошо, строго по плану. Главное в нашей игре — терпение и отсутствие слабостей.»',
+          '👍 «Одобряю. Позиция держится уверенно, инициатива не упущена.»',
+          '👍 «Правильное направление мысли! Продолжайте планомерно усиливать давление.»',
+          '👍 «Крепкий позиционный выбор. Тылы прикрыты, армия готова к манёврам.»'
+        ];
+        return goodPhrases[seed % goodPhrases.length];
+      }
+
+      case 'inaccuracy': {
+        const inaccuracyPhrases = [
+          `❓ «Хм... Не самое дальновидное решение. Не забывайте о гармонии фигур и защите короля!${rec}»`,
+          `❓ «Спорно, молодой человек. Зачем отдавать инициативу без веской причины?${rec}»`,
+          `❓ «Поспешили! В таких позициях нужно было сначала подтянуть резервы.${rec}»`,
+          `❓ «Не грубая ошибка, но позиционный перевес начинает потихоньку таять.${rec}»`,
+          `❓ «Ай-яй-яй, нарушаете координацию фигур. Придётся потом тратить темпы на перегруппировку.${rec}»`
+        ];
+        return inaccuracyPhrases[seed % inaccuracyPhrases.length];
+      }
+
+      case 'mistake': {
+        const mistakePhrases = [
+          `⚠️ «Ну кто так развивает фигуры? Мы же проходили это на третьем занятии!${rec}»`,
+          `⚠️ «Опасная беспечность! Вы ослабили важный пункт, опытный соперник этого не простит!${rec}»`,
+          `⚠️ «Не туда! Смотрите шире на доску, ваш соперник уже готовит встречный удар.${rec}»`,
+          `⚠️ «Опять торопитесь! В шахматах сначала считают варианты, а потом берутся за фигуру!${rec}»`,
+          `⚠️ «Позиционная ошибка! Вы отдали ключевое поле, теперь придётся держать оборону.${rec}»`
+        ];
+        return mistakePhrases[seed % mistakePhrases.length];
+      }
+
+      case 'blunder': {
+        const blunderPhrases = [
+          `❌ «Ох, батюшки... Грубейший зевок! Где же ваши глаза, отдаёте позицию на ровном месте?!${rec}»`,
+          `❌ «Катастрофа! Король брошен на произвол судьбы, а материал висит в воздухе!${rec}»`,
+          `❌ «Ну за что мне это на старости лет?! Такой зевок на глазах у всего тренерского штаба!${rec}»`,
+          `❌ «Срочно пейте воду и считайте защиту! Это не просто оплошность, это подарок сопернику.${rec}»`,
+          `❌ «Эх, батенька... Рука потянулась быстрее мысли. В шахматах за такое сразу ставят мат!${rec}»`
+        ];
+        return blunderPhrases[seed % blunderPhrases.length];
+      }
+
       default:
         return '⭐️ «Сильный позиционный ход по канонам шахматной школы.»';
     }
@@ -185,60 +288,60 @@ export const CoachReviewBar: React.FC<CoachReviewBarProps> = ({
   }, [currentStepIndex, history.length, onJumpToStep, onExitReview]);
 
   return (
-    <div className="w-full flex flex-col gap-3">
+    <div className="w-full flex flex-col gap-2 sm:gap-3">
       {/* 1. TOP: Professor Speech Card */}
-      <div className="relative flex items-center gap-3 rounded-2xl border border-amber-900/40 bg-slate-900/95 p-3.5 shadow-2xl backdrop-blur-md">
+      <div className="relative flex items-center gap-2 sm:gap-3 rounded-2xl border border-amber-900/40 bg-slate-900/95 p-2 sm:p-3.5 shadow-2xl backdrop-blur-md">
         {/* Professor Mascot Avatar */}
-        <div className="relative shrink-0 flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-tr from-amber-900 via-amber-800 to-amber-700 p-1 shadow-lg shadow-amber-950/40 border border-amber-600/30">
+        <div className="relative shrink-0 flex items-center justify-center h-10 w-10 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-amber-900 via-amber-800 to-amber-700 p-0.5 sm:p-1 shadow-lg shadow-amber-950/40 border border-amber-600/30">
           <ChessProfessorSvg className="h-full w-full drop-shadow-md" />
         </div>
 
         {/* White Speech Bubble */}
-        <div className="relative flex-1 rounded-2xl bg-white px-4 py-3 text-slate-900 shadow-md border border-slate-200">
+        <div className="relative flex-1 rounded-xl sm:rounded-2xl bg-white px-2.5 sm:px-4 py-2 sm:py-3 text-slate-900 shadow-md border border-slate-200 min-w-0">
           {/* Bubble pointer tail */}
-          <div className="absolute top-4 -left-2 h-3.5 w-3.5 rotate-45 bg-white border-l border-b border-slate-200" />
+          <div className="absolute top-3.5 -left-1.5 sm:top-4 sm:-left-2 h-3 w-3 sm:h-3.5 sm:w-3.5 rotate-45 bg-white border-l border-b border-slate-200" />
 
-          <div className="flex items-center justify-between gap-2 mb-1">
-            <span className="text-[11px] font-black uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
+          <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+            <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-amber-800 flex items-center gap-1 truncate">
               <span>👴🏼</span>
-              <span>Профессор шахматной школы</span>
+              <span className="truncate">Профессор</span>
             </span>
-            <span className="text-[11px] text-slate-500 font-mono">
+            <span className="text-[10px] sm:text-[11px] text-slate-500 font-mono shrink-0">
               {currentStepIndex >= 0
                 ? `Ход ${Math.floor(currentStepIndex / 2) + 1} из ${Math.max(1, Math.ceil(history.length / 2))}`
-                : 'Начало партии'}
+                : 'Начало'}
             </span>
           </div>
 
-          <p className="text-xs sm:text-sm font-semibold leading-snug text-slate-800">
+          <p className="text-[11px] sm:text-sm font-semibold leading-snug text-slate-800">
             {getCoachSpeech()}
           </p>
         </div>
 
         {/* Action Buttons inside Coach Card */}
-        <div className="shrink-0 flex items-center gap-1.5">
+        <div className="shrink-0 flex items-center gap-1 sm:gap-1.5">
           <button
             onClick={() => onJumpToStep(Math.max(-1, currentStepIndex - 1))}
             disabled={currentStepIndex <= -1}
-            className="p-1.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer shadow-sm"
+            className="p-1 sm:p-1.5 rounded-lg sm:rounded-xl border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer shadow-sm"
             title="Назад на 1 ход (←)"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
           <button
             onClick={() => onJumpToStep(Math.min(history.length - 1, currentStepIndex + 1))}
             disabled={currentStepIndex >= history.length - 1}
-            className="p-1.5 rounded-xl bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer shadow-md shadow-blue-900/40"
+            className="p-1 sm:p-1.5 rounded-lg sm:rounded-xl bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer shadow-md shadow-blue-900/40"
             title="Далее (→)"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
           <button
             onClick={onExitReview}
-            className="p-1.5 rounded-xl border border-slate-700 bg-slate-800/80 text-slate-400 hover:bg-red-950/40 hover:border-red-500/50 hover:text-red-300 transition cursor-pointer ml-1"
+            className="p-1 sm:p-1.5 rounded-lg sm:rounded-xl border border-slate-700 bg-slate-800/80 text-slate-400 hover:bg-red-950/40 hover:border-red-500/50 hover:text-red-300 transition cursor-pointer ml-0.5 sm:ml-1"
             title="Завершить разбор и вернуться к игре (Esc)"
           >
-            <X className="h-4 w-4" />
+            <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
         </div>
       </div>

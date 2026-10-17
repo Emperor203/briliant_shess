@@ -43,12 +43,12 @@ export const EvaluationBar: React.FC<EvaluationBarProps> = ({ evaluation, flippe
         style={{ height: `${topPercentage}%` }}
       >
         {!flipped && !isWhiteAdvantage && (
-          <span className="text-[11px] font-black tracking-tight text-slate-300 drop-shadow">
+          <span className="text-[9px] sm:text-[11px] font-black tracking-tight text-slate-300 drop-shadow truncate px-0.5">
             {label}
           </span>
         )}
         {flipped && isWhiteAdvantage && (
-          <span className="text-[11px] font-black tracking-tight text-slate-300 drop-shadow">
+          <span className="text-[9px] sm:text-[11px] font-black tracking-tight text-slate-300 drop-shadow truncate px-0.5">
             {label}
           </span>
         )}
@@ -63,12 +63,12 @@ export const EvaluationBar: React.FC<EvaluationBarProps> = ({ evaluation, flippe
         style={{ height: `${100 - topPercentage}%` }}
       >
         {!flipped && isWhiteAdvantage && (
-          <span className="text-[11px] font-black tracking-tight text-slate-800 drop-shadow">
+          <span className="text-[9px] sm:text-[11px] font-black tracking-tight text-slate-800 drop-shadow truncate px-0.5">
             {label}
           </span>
         )}
         {flipped && !isWhiteAdvantage && (
-          <span className="text-[11px] font-black tracking-tight text-slate-800 drop-shadow">
+          <span className="text-[9px] sm:text-[11px] font-black tracking-tight text-slate-800 drop-shadow truncate px-0.5">
             {label}
           </span>
         )}
