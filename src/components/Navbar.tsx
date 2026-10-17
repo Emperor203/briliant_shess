@@ -1,5 +1,5 @@
 import React from 'react';
-import { Volume2, VolumeX, RotateCw, Settings, FileText, Plus, Box, Layers } from 'lucide-react';
+import { Volume2, VolumeX, RotateCw, Settings, FileText, Plus, Box, Layers, Sparkles } from 'lucide-react';
 
 interface NavbarProps {
   viewMode: '2d' | '3d';
@@ -10,6 +10,7 @@ interface NavbarProps {
   onToggleSound: () => void;
   onOpenSettings: () => void;
   onOpenFenPgn: () => void;
+  onOpenReview: () => void;
   onNewGame: () => void;
 }
 
@@ -22,6 +23,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleSound,
   onOpenSettings,
   onOpenFenPgn,
+  onOpenReview,
   onNewGame,
 }) => {
   return (
@@ -92,6 +94,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           title="Экспорт/Импорт FEN & PGN"
         >
           <FileText className="h-4 w-4" />
+        </button>
+
+        {/* Game Review / Analysis */}
+        <button
+          onClick={onOpenReview}
+          className="flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 px-3 py-1.5 text-xs font-bold text-amber-300 hover:from-amber-500/30 hover:to-yellow-500/30 hover:border-amber-400 transition cursor-pointer shadow-sm"
+          title="Полный анализ и разбор партии"
+        >
+          <Sparkles className="h-4 w-4 text-amber-400" />
+          <span className="hidden sm:inline">Анализ</span>
         </button>
 
         {/* Settings */}

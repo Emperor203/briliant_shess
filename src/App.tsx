@@ -10,7 +10,8 @@ import { Navbar } from './components/Navbar';
 import { SettingsModal } from './components/SettingsModal';
 import { FenPgnModal } from './components/FenPgnModal';
 import { GameOverModal } from './components/GameOverModal';
-import type { GameSettings, MoveAnalysis, PlayerSide } from './types/chess';
+import { GameReviewModal } from './components/GameReviewModal';
+import type { GameSettings, MoveAnalysis, PlayerSide, BoardArrow } from './types/chess';
 import { BOARD_THEMES, BOT_DIFFICULTIES, PIECE_VALUES, TIME_CONTROLS } from './constants/chessData';
 import { sounds } from './services/sound';
 import { stockfish } from './services/stockfish';
@@ -66,9 +67,11 @@ export const App: React.FC = () => {
   const [blackTime, setBlackTime] = useState<number | undefined>(300);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
 
-  // Modals
+  // Modals & Review State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isFenPgnOpen, setIsFenPgnOpen] = useState(false);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [analysisArrow, setAnalysisArrow] = useState<BoardArrow | null>(null);
   const [gameOver, setGameOver] = useState<{
     isOpen: boolean;
     winner: 'w' | 'b' | 'draw' | null;
@@ -116,6 +119,8 @@ export const App: React.FC = () => {
     setHistory([]);
     setCurrentStepIndex(-1);
     setIsBotThinking(false);
+    setIsReviewOpen(false);
+    setAnalysisArrow(null);
     setGameOver({ isOpen: false, winner: null, reason: '' });
 
     // Setup Clocks
@@ -510,6 +515,7 @@ export const App: React.FC = () => {
         onToggleSound={() => saveSettings({ soundEnabled: !settings.soundEnabled })}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenFenPgn={() => setIsFenPgnOpen(true)}
+        onOpenReview={() => setIsReviewOpen(true)}
         onNewGame={() => startNewGame()}
       />
 
@@ -541,6 +547,7 @@ export const App: React.FC = () => {
                   flipped={boardFlipped}
                   onMove={executeMove}
                   lastAnalysis={lastMoveAnalysis}
+                  arrows={analysisArrow ? [analysisArrow] : []}
                   disabled={isBotThinking || (chess.turn() !== resolvedPlayerColor && !chess.isGameOver())}
                 />
               ) : (
@@ -654,6 +661,21 @@ export const App: React.FC = () => {
         playerColor={resolvedPlayerColor}
         history={history}
         onRestart={() => startNewGame()}
+        onOpenReview={() => setIsReviewOpen(true)}
+      />
+
+      {/* Game Review & Analysis Modal */}
+      <GameReviewModal
+        isOpen={isReviewOpen}
+        onClose={() => {
+          setIsReviewOpen(false);
+          setAnalysisArrow(null);
+        }}
+        history={history}
+        botRating={currentBot.rating}
+        currentStepIndex={currentStepIndex}
+        onJumpToStep={handleJumpToStep}
+        onShowBestMoveArrow={setAnalysisArrow}
       />
     </div>
   );

@@ -12,6 +12,7 @@ interface GameOverModalProps {
   playerColor: 'w' | 'b';
   history: MoveAnalysis[];
   onRestart: () => void;
+  onOpenReview: () => void;
 }
 
 export const GameOverModal: React.FC<GameOverModalProps> = ({
@@ -22,6 +23,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   playerColor,
   history,
   onRestart,
+  onOpenReview,
 }) => {
   const isPlayerWinner = winner === playerColor;
   const isDraw = winner === 'draw';
@@ -110,8 +112,11 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
         {/* Action Buttons */}
         <div className="mt-6 flex gap-3">
           <button
-            onClick={onClose}
-            className="flex-1 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-xs font-bold text-slate-300 hover:bg-slate-700 transition cursor-pointer"
+            onClick={() => {
+              onClose();
+              onOpenReview();
+            }}
+            className="flex-1 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-xs font-bold text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer"
           >
             Разбор партии
           </button>

@@ -19,6 +19,39 @@ export interface MoveAnalysis {
   explanation?: string;
 }
 
+export interface BoardArrow {
+  from: Square;
+  to: Square;
+  color: string;
+  label?: string;
+}
+
+export interface PlayerAccuracyStats {
+  accuracy: number; // percentage 0-100
+  performanceRating: number;
+  brilliant: number;
+  best: number;
+  excellent: number;
+  good: number;
+  inaccuracy: number;
+  mistake: number;
+  blunder: number;
+  totalMoves: number;
+}
+
+export interface GameReviewReport {
+  white: PlayerAccuracyStats;
+  black: PlayerAccuracyStats;
+  evalTimeline: {
+    ply: number;
+    moveNumber: number;
+    turn: Color;
+    scoreCp: number; // From White perspective
+    san: string;
+    quality: MoveQuality;
+  }[];
+}
+
 export type BoardThemeId = 'classic' | 'wood' | 'neon' | 'marble' | 'minimal';
 export type PieceStyleId = 'staunton' | 'neo' | 'pixel' | 'wood';
 

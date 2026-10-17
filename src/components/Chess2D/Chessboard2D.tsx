@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Chess } from 'chess.js';
 import type { Square } from 'chess.js';
 import { PieceSvg } from './PieceSvg';
-import type { BoardTheme, MoveAnalysis, PieceStyleId } from '../../types/chess';
+import type { BoardTheme, MoveAnalysis, PieceStyleId, BoardArrow } from '../../types/chess';
 import { MOVE_BADGES } from '../../constants/chessData';
 
 interface Chessboard2DProps {
@@ -12,6 +12,7 @@ interface Chessboard2DProps {
   flipped: boolean;
   onMove: (from: Square, to: Square, promotion?: string) => boolean | Promise<boolean>;
   lastAnalysis?: MoveAnalysis;
+  arrows?: BoardArrow[];
   disabled?: boolean;
 }
 
@@ -22,6 +23,7 @@ export const Chessboard2D: React.FC<Chessboard2DProps> = ({
   flipped,
   onMove,
   lastAnalysis,
+  arrows = [],
   disabled = false,
 }) => {
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
@@ -113,7 +115,7 @@ export const Chessboard2D: React.FC<Chessboard2DProps> = ({
     <div className="relative aspect-square w-full max-w-[620px] select-none rounded-xl p-2 shadow-2xl transition-colors duration-300"
          style={{ backgroundColor: boardTheme.boardBorder }}>
       {/* 8x8 Grid */}
-      <div className="grid h-full w-full grid-cols-8 grid-rows-8 overflow-hidden rounded-lg">
+      <div className="relative grid h-full w-full grid-cols-8 grid-rows-8 overflow-hidden rounded-lg">
         {displayRanks.map((rank, rankIdx) =>
           displayFiles.map((file, fileIdx) => {
             const square = `${file}${rank}` as Square;
@@ -200,6 +202,70 @@ export const Chessboard2D: React.FC<Chessboard2DProps> = ({
               </div>
             );
           })
+        )}
+
+        {/* SVG Analysis Arrows Overlay */}
+        {arrows && arrows.length > 0 && (
+          <svg
+            className="absolute inset-0 z-20 pointer-events-none h-full w-full"
+            viewBox="0 0 800 800"
+          >
+            {arrows.map((arrow, idx) => {
+              const file1 = arrow.from.charCodeAt(0) - 97;
+              const rank1 = parseInt(arrow.from[1], 10) - 1;
+              const file2 = arrow.to.charCodeAt(0) - 97;
+              const rank2 = parseInt(arrow.to[1], 10) - 1;
+
+              const col1 = flipped ? 7 - file1 : file1;
+              const row1 = flipped ? rank1 : 7 - rank1;
+              const col2 = flipped ? 7 - file2 : file2;
+              const row2 = flipped ? rank2 : 7 - rank2;
+
+              const x1 = col1 * 100 + 50;
+              const y1 = row1 * 100 + 50;
+              const x2 = col2 * 100 + 50;
+              const y2 = row2 * 100 + 50;
+
+              const dx = x2 - x1;
+              const dy = y2 - y1;
+              const len = Math.hypot(dx, dy);
+              if (len < 10) return null;
+
+              const ux = dx / len;
+              const uy = dy / len;
+              const nx = -uy;
+              const ny = ux;
+
+              const headLen = 32;
+              const headWidth = 30;
+              const shaftWidth = 14;
+
+              const sx = x1 + ux * 18;
+              const sy = y1 + uy * 18;
+
+              const bx = x2 - ux * headLen;
+              const by = y2 - uy * headLen;
+
+              const tx = x2 - ux * 8;
+              const ty = y2 - uy * 8;
+
+              const points = [
+                `${sx + nx * (shaftWidth / 2)},${sy + ny * (shaftWidth / 2)}`,
+                `${bx + nx * (shaftWidth / 2)},${by + ny * (shaftWidth / 2)}`,
+                `${bx + nx * (headWidth / 2)},${by + ny * (headWidth / 2)}`,
+                `${tx},${ty}`,
+                `${bx - nx * (headWidth / 2)},${by - ny * (headWidth / 2)}`,
+                `${bx - nx * (shaftWidth / 2)},${by - ny * (shaftWidth / 2)}`,
+                `${sx - nx * (shaftWidth / 2)},${sy - ny * (shaftWidth / 2)}`,
+              ].join(' ');
+
+              return (
+                <g key={`arrow-${idx}`} className="drop-shadow-md">
+                  <polygon points={points} fill={arrow.color} fillOpacity={0.82} />
+                </g>
+              );
+            })}
+          </svg>
         )}
       </div>
 
