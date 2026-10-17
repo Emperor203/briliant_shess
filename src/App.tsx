@@ -566,12 +566,12 @@ export const App: React.FC = () => {
       />
 
       {/* Main Game Arena */}
-      <main className={`flex-1 container mx-auto p-3 sm:p-5 flex flex-col lg:flex-row items-center justify-center gap-6 ${isReviewMode ? 'max-w-2xl' : 'max-w-7xl'}`}>
+      <main className={`flex-1 container mx-auto px-2 sm:px-4 py-1.5 sm:py-2 flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-6 ${isReviewMode ? 'max-w-2xl' : 'max-w-7xl'} h-[calc(100dvh-50px)] overflow-y-auto lg:overflow-hidden`}>
         {/* Left / Center Section: Board + Eval Bar + Player Cards / Coach Review */}
-        <div className={`flex flex-col items-center w-full transition-all duration-300 ${isReviewMode ? 'max-w-[480px]' : 'max-w-[620px]'}`}>
+        <div className={`flex flex-col items-center w-full shrink-0 transition-all duration-300 ${isReviewMode ? 'max-w-[min(480px,calc(100dvh-200px))]' : 'max-w-[min(540px,calc(100dvh-150px))]'}`}>
           {/* Top section: Coach Owl Review Card OR Top Player Card */}
           {isReviewMode ? (
-            <div className="w-full mb-2.5">
+            <div className="w-full mb-1.5">
               <CoachReviewBar
                 history={history}
                 currentStepIndex={currentStepIndex}
@@ -585,13 +585,13 @@ export const App: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="w-full mb-2.5">{topPlayer}</div>
+              <div className="w-full mb-1.5">{topPlayer}</div>
 
               {/* Browsing Old Move Notification Banner */}
               {isBrowsingHistory && (
-                <div className="w-full mb-2.5 flex items-center justify-between rounded-xl border border-amber-500/50 bg-amber-950/80 px-3.5 py-2 text-xs font-medium text-amber-200 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-1">
+                <div className="w-full mb-1.5 flex items-center justify-between rounded-xl border border-amber-500/50 bg-amber-950/80 px-3 py-1.5 text-xs font-medium text-amber-200 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-1">
                   <div className="flex items-center gap-2">
-                    <span className="flex h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
+                    <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-ping" />
                     <span>
                       Просмотр истории:{' '}
                       <strong className="text-amber-100">
@@ -603,7 +603,7 @@ export const App: React.FC = () => {
                   </div>
                   <button
                     onClick={() => handleJumpToStep(history.length - 1)}
-                    className="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-3 py-1 text-xs font-bold text-white shadow-md transition cursor-pointer"
+                    className="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-2.5 py-0.5 text-xs font-bold text-white shadow-md transition cursor-pointer"
                   >
                     <span>Вернуться в игру</span>
                     <span className="h-2 w-2 rounded-full bg-red-400 animate-pulse" />
@@ -614,13 +614,13 @@ export const App: React.FC = () => {
           )}
 
           {/* Board + Side Eval Bar Container */}
-          <div className="relative flex items-center justify-center w-full gap-2.5">
+          <div className="relative flex items-center justify-center w-full gap-2">
             {/* Live Stockfish Evaluation Bar */}
             {settings.showEvalBar && (
               <EvaluationBar
                 evaluation={evaluation}
                 flipped={boardFlipped}
-                className={`w-7 shrink-0 transition-all duration-300 ${isReviewMode ? 'h-[350px] sm:h-[450px]' : 'h-[420px] sm:h-[540px]'}`}
+                className="w-5 sm:w-6 self-stretch shrink-0"
               />
             )}
 
@@ -662,12 +662,12 @@ export const App: React.FC = () => {
               />
             </div>
           ) : (
-            <div className="w-full mt-2.5">{bottomPlayer}</div>
+            <div className="w-full mt-1.5">{bottomPlayer}</div>
           )}
 
           {/* Bot thinking indicator bar */}
           {isBotThinking && (
-            <div className="mt-2 flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-950/60 px-4 py-1 text-xs font-semibold text-cyan-300 animate-pulse">
+            <div className="mt-1.5 flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-950/60 px-3 py-0.5 text-[11px] font-semibold text-cyan-300 animate-pulse">
               <span className="h-2 w-2 rounded-full bg-cyan-400" />
               <span>Stockfish рассчитывает глубину {currentBot.depth}...</span>
             </div>
@@ -676,7 +676,7 @@ export const App: React.FC = () => {
 
         {/* Right Section: Move History, PGN & Quick Controls (Hidden during Coach Review) */}
         {!isReviewMode && (
-          <div className="w-full lg:w-[380px] flex flex-col gap-4">
+          <div className="w-full lg:w-[360px] flex flex-col gap-2.5">
           {/* Move History Table */}
           <MoveHistory
             history={history}
@@ -685,7 +685,7 @@ export const App: React.FC = () => {
           />
 
           {/* Quick Resign / Rematch Bar */}
-          <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 p-3 shadow-lg">
+          <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 p-2 shadow-lg">
             <button
               onClick={() => {
                 if (window.confirm('Сдаться в текущей партии?')) {
@@ -694,40 +694,40 @@ export const App: React.FC = () => {
                 }
               }}
               disabled={chess.isGameOver()}
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/80 py-2 text-xs font-bold text-slate-300 hover:bg-red-950/40 hover:border-red-500/40 hover:text-red-300 transition disabled:opacity-40 cursor-pointer"
+              className="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 py-1.5 text-xs font-bold text-slate-300 hover:bg-red-950/40 hover:border-red-500/40 hover:text-red-300 transition disabled:opacity-40 cursor-pointer"
             >
-              <Flag className="h-3.5 w-3.5" />
+              <Flag className="h-3 w-3" />
               <span>Сдаться</span>
             </button>
             <button
               onClick={() => startNewGame()}
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-cyan-600/90 py-2 text-xs font-bold text-white hover:bg-cyan-500 shadow-md transition cursor-pointer"
+              className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-cyan-600/90 py-1.5 text-xs font-bold text-white hover:bg-cyan-500 shadow-md transition cursor-pointer"
             >
-              <RotateCcw className="h-3.5 w-3.5" />
+              <RotateCcw className="h-3 w-3" />
               <span>Новая партия</span>
             </button>
           </div>
 
           {/* Engine Quality Badge Guide Banner */}
-          <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 text-xs text-slate-400 space-y-2">
-            <h4 className="font-bold text-slate-200">Система оценки ходов Stockfish:</h4>
-            <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px]">
-              <span className="flex items-center gap-1.5">
-                <span>💎</span> <strong className="text-cyan-300">Бриллиантовый</strong> (Жертва)
+          <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-2 text-xs text-slate-400 space-y-1">
+            <h4 className="font-bold text-[11px] text-slate-200">Оценка ходов Stockfish:</h4>
+            <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px]">
+              <span className="flex items-center gap-1">
+                <span>💎</span> <strong className="text-cyan-300">Бриллиантовый</strong>
               </span>
-              <span className="flex items-center gap-1.5">
-                <span>⭐️</span> <strong className="text-green-300">Лучший</strong> (1-я линия)
+              <span className="flex items-center gap-1">
+                <span>⭐️</span> <strong className="text-green-300">Лучший</strong>
               </span>
-              <span className="flex items-center gap-1.5">
-                <span>👍</span> <strong className="text-lime-300">Отличный / Хороший</strong>
+              <span className="flex items-center gap-1">
+                <span>👍</span> <strong className="text-lime-300">Отличный</strong>
               </span>
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1">
                 <span>❓</span> <strong className="text-yellow-300">Неточность</strong>
               </span>
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1">
                 <span>⚠️</span> <strong className="text-orange-300">Ошибка</strong>
               </span>
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1">
                 <span>❌</span> <strong className="text-red-300">Зевок</strong>
               </span>
             </div>

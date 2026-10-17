@@ -145,7 +145,7 @@ export const MoveHistory: React.FC<MoveHistoryProps> = ({
       {/* Move list table */}
       <div
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto p-2 space-y-1 font-mono text-xs sm:text-sm max-h-[320px] select-none"
+        className="flex-1 overflow-y-auto p-1.5 space-y-0.5 font-mono text-xs max-h-[min(250px,calc(100dvh-380px))] select-none"
       >
         {turns.length === 0 ? (
           <div className="flex h-36 flex-col items-center justify-center gap-1 text-xs text-slate-500 italic">

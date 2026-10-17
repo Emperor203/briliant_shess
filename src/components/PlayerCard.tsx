@@ -38,25 +38,25 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
 
   return (
     <div
-      className={`flex items-center justify-between rounded-xl border p-3 transition-all duration-200 ${
+      className={`flex items-center justify-between rounded-xl border py-1.5 px-3 transition-all duration-200 ${
         isActive
           ? 'border-cyan-500/60 bg-slate-800/95 shadow-lg shadow-cyan-950/40 ring-2 ring-cyan-500/30'
-          : 'border-slate-700/80 bg-slate-850 bg-slate-800/85 text-slate-300'
+          : 'border-slate-700/80 bg-slate-800/85 text-slate-300'
       }`}
     >
       {/* Player identity */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         <div
-          className={`relative flex h-10 w-10 items-center justify-center rounded-xl border shadow-inner ${
+          className={`relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border shadow-inner ${
             isBot
               ? 'border-cyan-500/40 bg-cyan-950/60 text-cyan-400'
               : 'border-emerald-500/40 bg-emerald-950/60 text-emerald-400'
           }`}
         >
-          {isBot ? <Bot className="h-5 w-5" /> : <User className="h-5 w-5" />}
+          {isBot ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
           {/* Color marker tag */}
           <span
-            className={`absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border border-slate-700 shadow-sm ${
+            className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border border-slate-700 shadow-sm ${
               color === 'w' ? 'bg-white' : 'bg-slate-900 ring-1 ring-white/50'
             }`}
           />
@@ -95,7 +95,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
       {/* Clock display */}
       {timeRemaining !== undefined && (
         <div
-          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-base font-bold transition-colors ${
+          className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 font-mono text-sm font-bold transition-colors ${
             isLowTime
               ? 'animate-pulse bg-red-950/80 text-red-400 border border-red-800'
               : isActive
@@ -103,7 +103,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
               : 'bg-slate-900/60 text-slate-400 border border-transparent'
           }`}
         >
-          <Clock className={`h-4 w-4 ${isLowTime ? 'text-red-400' : 'text-slate-400'}`} />
+          <Clock className={`h-3.5 w-3.5 ${isLowTime ? 'text-red-400' : 'text-slate-400'}`} />
           <span>{formatTime(timeRemaining)}</span>
         </div>
       )}

@@ -31,22 +31,22 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNewGame,
 }) => {
   return (
-    <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 bg-slate-900/90 px-4 py-3 backdrop-blur-md">
+    <header className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 bg-slate-900/90 px-3 py-1.5 backdrop-blur-md shrink-0">
       {/* Brand */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         <img
           src="/logo.jpg"
           alt="Brilliant Chess"
-          className="h-11 w-11 rounded-xl object-cover shadow-lg shadow-amber-950/40 ring-2 ring-amber-400/50 hover:scale-105 transition-transform"
+          className="h-8 w-8 rounded-lg object-cover shadow-md shadow-amber-950/40 ring-1 ring-amber-400/50 hover:scale-105 transition-transform"
         />
         <div className="flex flex-col justify-center">
           <h1
-            className="text-2xl font-bold tracking-wide m-0 bg-gradient-to-r from-amber-200 via-amber-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-sm select-none"
+            className="text-xl font-bold tracking-wide m-0 bg-gradient-to-r from-amber-200 via-amber-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-sm select-none leading-none"
             style={{ fontFamily: "'Dancing Script', 'Caveat', cursive" }}
           >
             Brilliant Chess
           </h1>
-          <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold m-0 -mt-0.5">
+          <p className="hidden sm:block text-[9px] text-slate-400 uppercase tracking-widest font-semibold m-0 mt-0.5">
             Бриллиантовые Шахматы • AI & 3D
           </p>
         </div>

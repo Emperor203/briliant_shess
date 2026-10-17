@@ -422,7 +422,7 @@ export const Chessboard3D: React.FC<Chessboard3DProps> = ({
   };
 
   return (
-    <div className="relative aspect-square w-full max-w-[620px] select-none rounded-xl overflow-hidden border border-slate-700 bg-slate-950 shadow-2xl">
+    <div className="relative aspect-square w-full max-h-[calc(100dvh-170px)] select-none rounded-xl overflow-hidden border border-slate-700 bg-slate-950 shadow-2xl">
       <div
         ref={mountRef}
         onPointerDown={handlePointerDown}
