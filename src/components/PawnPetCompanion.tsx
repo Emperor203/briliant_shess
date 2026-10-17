@@ -264,13 +264,13 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
           </div>
         )}
 
-        {/* Vector SVG Pawn Mascot (Large Size) */}
+        {/* Vector SVG Pawn Mascot (Large & Symmetrical) */}
         <svg
-          viewBox="0 0 100 120"
+          viewBox="0 0 100 125"
           className="relative h-44 w-44 sm:h-52 sm:w-52 drop-shadow-[0_15px_25px_rgba(0,0,0,0.7)]"
         >
           <defs>
-            {/* Body Golden / Pearlescent Gradient */}
+            {/* Body Golden / Amber Gradient */}
             <linearGradient id="pawnBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#fef08a" />
               <stop offset="35%" stopColor="#facc15" />
@@ -278,227 +278,242 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
               <stop offset="100%" stopColor="#ca8a04" />
             </linearGradient>
 
-            {/* Cyan Diamond Core Shine */}
-            <radialGradient id="pawnHeadShine" cx="35%" cy="30%" r="60%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
-              <stop offset="40%" stopColor="#fef08a" stopOpacity="0.8" />
-              <stop offset="85%" stopColor="#eab308" />
+            {/* Spherical Head Radial Highlight */}
+            <radialGradient id="pawnHeadShine" cx="38%" cy="32%" r="62%">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+              <stop offset="35%" stopColor="#fef08a" stopOpacity="0.9" />
+              <stop offset="75%" stopColor="#eab308" />
               <stop offset="100%" stopColor="#a16207" />
             </radialGradient>
 
-            {/* Base Shadow */}
+            {/* Base Pedestal Gradient */}
             <linearGradient id="pawnBaseGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#facc15" />
+              <stop offset="0%" stopColor="#fde047" />
+              <stop offset="50%" stopColor="#eab308" />
               <stop offset="100%" stopColor="#854d0e" />
             </linearGradient>
           </defs>
 
-          {/* Pedestal Base */}
-          <ellipse cx="50" cy="112" rx="34" ry="7" fill="#0f172a" opacity="0.4" />
+          {/* Base Floor Shadow */}
+          <ellipse cx="50" cy="116" rx="36" ry="5.5" fill="#000000" opacity="0.35" />
+
+          {/* Bottom Pedestal Ring (Symmetrical) */}
           <path
-            d="M 22 108 C 22 102, 78 102, 78 108 L 76 114 C 76 117, 24 117, 24 114 Z"
+            d="M 18 111 C 18 106, 82 106, 82 111 L 80 117 C 80 119, 20 119, 20 117 Z"
             fill="url(#pawnBaseGrad)"
-            stroke="#713f12"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M 28 98 C 28 94, 72 94, 72 98 L 74 105 C 74 107, 26 107, 26 105 Z"
-            fill="url(#pawnBodyGrad)"
-            stroke="#854d0e"
-            strokeWidth="1"
-          />
-
-          {/* Curvy Pawn Waist & Torso */}
-          <path
-            d="M 38 68 C 38 78, 29 88, 28 96 L 72 96 C 71 88, 62 78, 62 68 Z"
-            fill="url(#pawnBodyGrad)"
-            stroke="#854d0e"
+            stroke="#78350f"
             strokeWidth="1.5"
           />
 
-          {/* Neck Ring Collar */}
+          {/* Middle Pedestal Ring (Symmetrical) */}
+          <path
+            d="M 25 101 C 25 97, 75 97, 75 101 L 78 110 C 78 112, 22 112, 22 110 Z"
+            fill="url(#pawnBodyGrad)"
+            stroke="#78350f"
+            strokeWidth="1.2"
+          />
+
+          {/* Hourglass Torso (100% Symmetrical: 50 ± 14 at top, 50 ± 24 at bottom) */}
+          <path
+            d="M 36 68 C 36 82, 26 93, 26 101 L 74 101 C 74 93, 64 82, 64 68 Z"
+            fill="url(#pawnBodyGrad)"
+            stroke="#78350f"
+            strokeWidth="1.5"
+          />
+
+          {/* Torso Light Reflection */}
+          <path
+            d="M 39 72 C 39 82, 33 90, 31 96 C 34 88, 41 80, 41 72 Z"
+            fill="#ffffff"
+            opacity="0.3"
+          />
+
+          {/* Neck Ring Collar (Symmetrical: centered at 50) */}
+          <ellipse
+            cx="50"
+            cy="68"
+            rx="17"
+            ry="5"
+            fill="url(#pawnBaseGrad)"
+            stroke="#78350f"
+            strokeWidth="1.5"
+          />
           <ellipse
             cx="50"
             cy="66"
-            rx="16"
-            ry="4.5"
+            rx="14"
+            ry="3.5"
             fill="#fef08a"
-            stroke="#ca8a04"
-            strokeWidth="1.5"
+            opacity="0.9"
           />
 
-          {/* Spherical Head */}
+          {/* Spherical Head (Centered at 50, 42) */}
           <circle
             cx="50"
             cy="42"
             r="23"
             fill="url(#pawnHeadShine)"
-            stroke="#854d0e"
-            strokeWidth="1.5"
+            stroke="#78350f"
+            strokeWidth="1.6"
           />
 
-          {/* Cute Rosy Blushing Cheeks */}
+          {/* Head Specular Highlight Arc */}
+          <path
+            d="M 37 28 A 18 18 0 0 1 54 22"
+            fill="none"
+            stroke="#ffffff"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            opacity="0.6"
+          />
+
+          {/* Cute Rosy Blushing Cheeks (Symmetrical: 50 ± 16) */}
           <ellipse
             cx="34"
-            cy="48"
+            cy="49"
             rx="4.5"
             ry="2.5"
-            fill="#f43f5e"
-            opacity={mood === 'happy' || mood === 'victory' ? 0.7 : 0.35}
+            fill="#fb7185"
+            opacity={mood === 'happy' || mood === 'victory' ? 0.75 : 0.35}
           />
           <ellipse
             cx="66"
-            cy="48"
+            cy="49"
             rx="4.5"
             ry="2.5"
-            fill="#f43f5e"
-            opacity={mood === 'happy' || mood === 'victory' ? 0.7 : 0.35}
+            fill="#fb7185"
+            opacity={mood === 'happy' || mood === 'victory' ? 0.75 : 0.35}
           />
 
-          {/* Dynamic Eyes & Face Features based on Mood */}
+          {/* Dynamic Facial Features by Mood */}
           {mood === 'happy' || mood === 'victory' ? (
-            /* Joyful laughing curved eyes (^ ^) and beaming smile */
+            /* Joyful laughing arc eyes (^ ^) and beaming smile */
             <g>
-              {/* Happy curved eyes */}
+              {/* Cheerful curved laughing eyes (Symmetrical: 50 ± 11) */}
               <path
-                d="M 33 41 Q 40 33 45 41"
+                d="M 33 42 Q 39 34 45 42"
                 fill="none"
                 stroke="#451a03"
                 strokeWidth="3.2"
                 strokeLinecap="round"
               />
               <path
-                d="M 55 41 Q 60 33 67 41"
+                d="M 55 42 Q 61 34 67 42"
                 fill="none"
                 stroke="#451a03"
                 strokeWidth="3.2"
                 strokeLinecap="round"
               />
-              {/* Big open joyful smile */}
+              {/* Happy open smile */}
               <path
-                d="M 40 47 Q 50 60 60 47 Z"
-                fill="#881337"
+                d="M 43 48 Q 50 58 57 48 Z"
+                fill="#991b1b"
                 stroke="#451a03"
                 strokeWidth="1.5"
               />
-              <path d="M 44 51 Q 50 56 56 51" fill="#fda4af" />
-              {/* Arms raised up in joy */}
+              <path d="M 46 51 Q 50 55 54 51" fill="#f472b6" />
+
+              {/* Cheerful waving paws */}
               <path
-                d="M 28 75 Q 16 65 14 55"
+                d="M 30 76 Q 20 68 18 60"
                 fill="none"
                 stroke="#ca8a04"
                 strokeWidth="3.5"
                 strokeLinecap="round"
               />
-              <circle cx="13" cy="54" r="3" fill="#fef08a" stroke="#a16207" />
+              <circle cx="17" cy="59" r="3.5" fill="#fde047" stroke="#78350f" strokeWidth="1" />
               <path
-                d="M 72 75 Q 84 65 86 55"
+                d="M 70 76 Q 80 68 82 60"
                 fill="none"
                 stroke="#ca8a04"
                 strokeWidth="3.5"
                 strokeLinecap="round"
               />
-              <circle cx="87" cy="54" r="3" fill="#fef08a" stroke="#a16207" />
+              <circle cx="83" cy="59" r="3.5" fill="#fde047" stroke="#78350f" strokeWidth="1" />
             </g>
           ) : mood === 'sad' || mood === 'defeat' ? (
-            /* Sad worried droopy eyes and trembling mouth */
+            /* Sad worried eyes and trembling mouth */
             <g>
-              {/* Worried eyebrows */}
+              {/* Sad tilted eyebrows */}
               <path
-                d="M 34 33 L 44 36"
-                stroke="#451a03"
-                strokeWidth="2"
+                d="M 33 34 L 43 31"
+                fill="none"
+                stroke="#78350f"
+                strokeWidth="2.2"
                 strokeLinecap="round"
               />
               <path
-                d="M 66 33 L 56 36"
-                stroke="#451a03"
-                strokeWidth="2"
+                d="M 67 34 L 57 31"
+                fill="none"
+                stroke="#78350f"
+                strokeWidth="2.2"
                 strokeLinecap="round"
               />
-              {/* Big sad tearful eyes */}
-              <circle cx="39" cy="42" r="4.5" fill="#451a03" />
-              <circle cx="61" cy="42" r="4.5" fill="#451a03" />
-              <circle cx="41" cy="40" r="1.5" fill="#ffffff" />
-              <circle cx="63" cy="40" r="1.5" fill="#ffffff" />
-              {/* Glistening animated tear drops */}
+              {/* Big teary puppy eyes (Symmetrical: 50 ± 11) */}
+              <ellipse cx="39" cy="42" rx="6.5" ry="7.5" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
+              <ellipse cx="61" cy="42" rx="6.5" ry="7.5" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
+              <circle cx="39" cy="44" r="4.2" fill="#451a03" />
+              <circle cx="61" cy="44" r="4.2" fill="#451a03" />
+              <circle cx="38" cy="42.5" r="1.6" fill="#bae6fd" />
+              <circle cx="60" cy="42.5" r="1.6" fill="#bae6fd" />
+
+              {/* Smooth glistening tear drop on left cheek */}
               <path
-                d="M 38 48 C 38 52, 42 54, 42 56 C 42 58, 38 59, 36 56 C 35 54, 38 50, 38 48 Z"
+                d="M 35 48 C 35 52, 38 54, 38 56 C 38 58, 35 59, 33 56 C 32 54, 35 50, 35 48 Z"
                 fill="#38bdf8"
                 opacity="0.9"
               />
-              {/* Trembling sad downward mouth */}
+
+              {/* Trembling downward sad mouth */}
               <path
-                d="M 43 54 Q 50 49 57 54"
-                fill="none"
-                stroke="#451a03"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-              {/* Hands holding cheeks in concern */}
-              <circle cx="28" cy="56" r="3.5" fill="#fef08a" stroke="#a16207" />
-              <circle cx="72" cy="56" r="3.5" fill="#fef08a" stroke="#a16207" />
-            </g>
-          ) : (
-            /* Thoughtful / Contemplative: Eyes looking up & pondering */
-            <g>
-              {/* Inquisitive eyebrows */}
-              <path
-                d="M 34 34 Q 40 31 44 35"
-                stroke="#451a03"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M 56 35 Q 60 30 66 33"
-                stroke="#451a03"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              {/* Eyes looking up and slightly to the right */}
-              <circle cx="40" cy="41" r="4.2" fill="#451a03" />
-              <circle cx="60" cy="41" r="4.2" fill="#451a03" />
-              {/* Light glint in eyes */}
-              <circle cx="41.5" cy="39.5" r="1.6" fill="#ffffff" />
-              <circle cx="61.5" cy="39.5" r="1.6" fill="#ffffff" />
-              {/* Subtle curious / thoughtful mouth */}
-              <path
-                d="M 46 51 Q 50 53 54 50"
+                d="M 44 54 Q 50 49 56 54"
                 fill="none"
                 stroke="#451a03"
                 strokeWidth="2.2"
                 strokeLinecap="round"
               />
-              {/* Little cute glasses or hand to chin */}
-              <circle
-                cx="40"
-                cy="41"
-                r="7.5"
+            </g>
+          ) : (
+            /* Thoughtful / Contemplative: Clean big curious eyes looking up (NO GLASSES!) */
+            <g>
+              {/* Inquisitive eyebrows */}
+              <path
+                d="M 33 32 Q 39 29 45 32"
                 fill="none"
-                stroke="#ca8a04"
-                strokeWidth="1.2"
-                opacity="0.7"
+                stroke="#78350f"
+                strokeWidth="2.2"
+                strokeLinecap="round"
               />
-              <circle
-                cx="60"
-                cy="41"
-                r="7.5"
+              <path
+                d="M 55 31 Q 61 27 67 30"
                 fill="none"
-                stroke="#ca8a04"
-                strokeWidth="1.2"
-                opacity="0.7"
+                stroke="#78350f"
+                strokeWidth="2.2"
+                strokeLinecap="round"
               />
-              <line
-                x1="47.5"
-                y1="41"
-                x2="52.5"
-                y2="41"
-                stroke="#ca8a04"
-                strokeWidth="1.2"
-                opacity="0.7"
+
+              {/* Big clean anime-style eyes (Symmetrical: 50 ± 11) */}
+              <ellipse cx="39" cy="41" rx="6.5" ry="7.5" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
+              <ellipse cx="61" cy="41" rx="6.5" ry="7.5" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
+
+              {/* Pupils looking slightly up & right */}
+              <circle cx="41" cy="39" r="4.5" fill="#451a03" />
+              <circle cx="63" cy="39" r="4.5" fill="#451a03" />
+
+              {/* Light glints in eyes */}
+              <circle cx="42.5" cy="37.5" r="1.6" fill="#ffffff" />
+              <circle cx="64.5" cy="37.5" r="1.6" fill="#ffffff" />
+              <circle cx="39.5" cy="41" r="0.8" fill="#ffffff" />
+              <circle cx="61.5" cy="41" r="0.8" fill="#ffffff" />
+
+              {/* Subtle curious slight smile */}
+              <path
+                d="M 46 51 Q 50 54 54 51"
+                fill="none"
+                stroke="#451a03"
+                strokeWidth="2.2"
+                strokeLinecap="round"
               />
-              {/* Hand to chin gesture */}
-              <circle cx="56" cy="58" r="3.5" fill="#fef08a" stroke="#a16207" />
             </g>
           )}
         </svg>
