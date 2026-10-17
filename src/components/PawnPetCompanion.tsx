@@ -201,79 +201,73 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
 
   return (
     <div
-      className={`relative w-full rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-900/95 via-slate-900/90 to-slate-950/95 p-3 sm:p-3.5 shadow-2xl backdrop-blur-md transition-all duration-300 ${className}`}
+      className={`relative w-full flex flex-col items-center justify-center select-none transition-all duration-300 ${className}`}
     >
-      {/* Header with Title and Mood Badge */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-1.5">
-          <span className="flex h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
-          <span className="text-[11px] font-bold tracking-wider text-slate-300 uppercase">
-            Талисман
-          </span>
-        </div>
+      {/* Mood Badge Pill */}
+      <div className="flex items-center justify-center mb-1.5">
         <div
-          className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold transition-all ${moodConfig.badgeBg}`}
+          className={`flex items-center gap-1.5 rounded-full border px-3 py-0.5 text-[11px] font-bold shadow-md backdrop-blur-md transition-all ${moodConfig.badgeBg}`}
         >
-          <IconComponent className="h-3 w-3" />
+          <IconComponent className="h-3.5 w-3.5" />
           <span>{moodConfig.title}</span>
         </div>
       </div>
 
       {/* Speech Bubble */}
-      <div className="relative mb-2.5 rounded-xl border border-slate-700/80 bg-slate-800/90 p-2.5 shadow-lg backdrop-blur">
-        <p className="text-xs font-medium leading-relaxed text-slate-100 text-center animate-in fade-in duration-300 select-none">
+      <div className="relative mb-3 max-w-[240px] rounded-2xl bg-slate-800/85 px-3.5 py-2 shadow-xl backdrop-blur-md border border-slate-700/50">
+        <p className="text-xs sm:text-sm font-semibold leading-snug text-slate-100 text-center animate-in fade-in duration-300 select-none">
           «{speech}»
         </p>
         {/* Speech Bubble Arrow */}
-        <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-slate-800 border-r border-b border-slate-700/80 rotate-45" />
+        <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-slate-800/85 border-r border-b border-slate-700/50 rotate-45" />
       </div>
 
-      {/* Interactive Mascot Pawn Character */}
+      {/* Interactive Mascot Pawn Character - BIG & EXPRESSIVE */}
       <div
         onClick={handlePawnClick}
         title="Нажми на пешку!"
         className={`relative group mx-auto flex flex-col items-center justify-center cursor-pointer select-none transition-transform duration-300 ${
-          isBouncing ? 'scale-115 -rotate-6 animate-bounce' : 'hover:scale-105'
+          isBouncing ? 'scale-115 -rotate-6 animate-bounce' : 'hover:scale-105 active:scale-95'
         }`}
       >
         {/* Ambient Glow Aura */}
         <div
-          className={`absolute -inset-2 rounded-full opacity-30 blur-xl transition-all duration-500 bg-gradient-to-tr ${moodConfig.gradient}`}
+          className={`absolute -inset-4 rounded-full opacity-35 blur-2xl transition-all duration-500 bg-gradient-to-tr ${moodConfig.gradient}`}
         />
 
         {/* Floating accessory effects based on mood */}
         {mood === 'happy' && (
-          <div className="absolute -top-3 flex items-center justify-between w-24 px-1 pointer-events-none animate-pulse">
-            <span className="text-sm">✨</span>
-            <span className="text-xs">⭐</span>
-            <span className="text-sm">✨</span>
+          <div className="absolute -top-4 flex items-center justify-between w-32 px-1 pointer-events-none animate-pulse">
+            <span className="text-lg">✨</span>
+            <span className="text-sm">⭐</span>
+            <span className="text-lg">✨</span>
           </div>
         )}
         {mood === 'victory' && (
-          <div className="absolute -top-4 text-xl animate-bounce pointer-events-none">
+          <div className="absolute -top-6 text-3xl animate-bounce pointer-events-none">
             👑
           </div>
         )}
         {mood === 'sad' && (
-          <div className="absolute -top-2 flex items-center justify-center w-full pointer-events-none">
-            <span className="text-xs opacity-70 animate-pulse">💧</span>
+          <div className="absolute -top-3 flex items-center justify-center w-full pointer-events-none">
+            <span className="text-base opacity-80 animate-pulse">💧</span>
           </div>
         )}
         {mood === 'thoughtful' && (
-          <div className="absolute -top-2.5 right-4 text-xs animate-pulse pointer-events-none">
+          <div className="absolute -top-3 right-4 text-base animate-pulse pointer-events-none">
             💭
           </div>
         )}
         {mood === 'thinking_bot' && (
-          <div className="absolute -top-2 text-xs animate-spin pointer-events-none">
+          <div className="absolute -top-3 text-base animate-spin pointer-events-none">
             ⚙️
           </div>
         )}
 
-        {/* Vector SVG Pawn Mascot */}
+        {/* Vector SVG Pawn Mascot (Large Size) */}
         <svg
           viewBox="0 0 100 120"
-          className="relative h-28 w-28 drop-shadow-[0_10px_15px_rgba(0,0,0,0.6)]"
+          className="relative h-44 w-44 sm:h-52 sm:w-52 drop-shadow-[0_15px_25px_rgba(0,0,0,0.7)]"
         >
           <defs>
             {/* Body Golden / Pearlescent Gradient */}
@@ -515,9 +509,9 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
         </span>
       </div>
 
-      {/* Win Chance Progress Bar */}
-      <div className="mt-3 pt-2.5 border-t border-slate-800">
-        <div className="flex items-center justify-between text-[11px] font-bold mb-1">
+      {/* Floating Win Chance Progress Bar */}
+      <div className="mt-2 w-full max-w-[210px] flex flex-col items-center gap-1">
+        <div className="flex items-center justify-between w-full px-1 text-[11px] font-bold">
           <span className="text-slate-400">Шансы на победу</span>
           <span
             className={`font-mono ${
@@ -531,7 +525,7 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
             {winProbability}%
           </span>
         </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800 p-0.5">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800/80 p-0.5 shadow-inner">
           <div
             className={`h-full rounded-full transition-all duration-700 ease-out ${moodConfig.barColor}`}
             style={{ width: `${winProbability}%` }}

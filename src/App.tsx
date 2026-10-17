@@ -572,7 +572,7 @@ export const App: React.FC = () => {
       <main className={`flex-1 container mx-auto px-2 sm:px-4 py-1.5 sm:py-2 flex flex-col lg:flex-row items-center justify-center gap-3 lg:gap-5 xl:gap-6 ${isReviewMode ? 'max-w-2xl' : 'max-w-7xl'} h-[calc(100dvh-50px)] overflow-y-auto lg:overflow-hidden`}>
         {/* Left Section: Pawn Pet Mascot (Desktop & Laptop) */}
         {settings.showPet !== false && !isReviewMode && (
-          <aside className="hidden lg:flex flex-col items-center justify-center w-[180px] xl:w-[210px] shrink-0 self-center animate-in fade-in slide-in-from-left-4 duration-300">
+          <aside className="hidden lg:flex flex-col items-center justify-center w-[230px] xl:w-[270px] shrink-0 self-center animate-in fade-in slide-in-from-left-4 duration-300">
             <PawnPetCompanion
               evaluation={evaluation}
               playerColor={resolvedPlayerColor}
