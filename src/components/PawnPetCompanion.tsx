@@ -185,8 +185,8 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
         return {
           title: 'ПОБЕДА!',
           badgeBg: 'bg-amber-500/20 text-amber-300 border-amber-400/40',
-          gradient: 'from-amber-400 via-yellow-300 to-amber-500',
-          aura: 'shadow-amber-500/30',
+          glowInner: 'rgba(245, 158, 11, 0.4)',
+          glowMid: 'rgba(234, 179, 8, 0.18)',
           icon: Trophy,
           barColor: 'bg-gradient-to-r from-amber-400 to-yellow-300',
         };
@@ -194,8 +194,8 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
         return {
           title: 'Радуется (Ликует)',
           badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40',
-          gradient: 'from-emerald-400 via-cyan-300 to-teal-400',
-          aura: 'shadow-emerald-500/30',
+          glowInner: 'rgba(16, 185, 129, 0.35)',
+          glowMid: 'rgba(6, 182, 212, 0.18)',
           icon: Sparkles,
           barColor: 'bg-gradient-to-r from-teal-400 to-emerald-400',
         };
@@ -204,8 +204,8 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
         return {
           title: 'Переживает (Грустит)',
           badgeBg: 'bg-red-500/20 text-red-300 border-red-400/40',
-          gradient: 'from-red-400 via-rose-300 to-orange-400',
-          aura: 'shadow-red-500/30',
+          glowInner: 'rgba(239, 68, 68, 0.35)',
+          glowMid: 'rgba(249, 115, 22, 0.18)',
           icon: AlertTriangle,
           barColor: 'bg-gradient-to-r from-red-500 to-rose-400',
         };
@@ -213,8 +213,8 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
         return {
           title: 'Наблюдает за ботом',
           badgeBg: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40',
-          gradient: 'from-cyan-400 via-blue-300 to-indigo-400',
-          aura: 'shadow-cyan-500/30',
+          glowInner: 'rgba(6, 182, 212, 0.35)',
+          glowMid: 'rgba(59, 130, 246, 0.18)',
           icon: RefreshCw,
           barColor: 'bg-gradient-to-r from-cyan-400 to-blue-500',
         };
@@ -224,8 +224,8 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
         return {
           title: 'Задумчивый (В фокусе)',
           badgeBg: 'bg-amber-500/15 text-amber-300 border-amber-400/30',
-          gradient: 'from-amber-400 via-yellow-200 to-amber-500',
-          aura: 'shadow-cyan-500/20',
+          glowInner: 'rgba(245, 158, 11, 0.3)',
+          glowMid: 'rgba(234, 179, 8, 0.14)',
           icon: HelpCircle,
           barColor: 'bg-gradient-to-r from-amber-400 to-yellow-400',
         };
@@ -266,9 +266,12 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
           isBouncing ? 'scale-115 -rotate-6 animate-bounce' : 'hover:scale-105 active:scale-95'
         }`}
       >
-        {/* Ambient Glow Aura */}
+        {/* Ambient Glow Aura - 100% Circular, naturally feathered with no clipping */}
         <div
-          className={`absolute -inset-4 rounded-full opacity-35 blur-2xl transition-all duration-500 bg-gradient-to-tr ${moodConfig.gradient}`}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-56 sm:h-56 rounded-full pointer-events-none transition-all duration-700"
+          style={{
+            background: `radial-gradient(circle, ${moodConfig.glowInner} 0%, ${moodConfig.glowMid} 45%, transparent 70%)`,
+          }}
         />
 
         {/* Floating accessory effects based on mood */}
@@ -304,7 +307,7 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
         <svg
           ref={svgRef}
           viewBox="0 0 100 125"
-          className="relative h-44 w-44 sm:h-52 sm:w-52 drop-shadow-[0_15px_25px_rgba(0,0,0,0.7)]"
+          className="relative h-44 w-44 sm:h-52 sm:w-52 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]"
         >
           <defs>
             {/* Body Golden / Amber Gradient */}
@@ -329,10 +332,17 @@ export const PawnPetCompanion: React.FC<PawnPetCompanionProps> = ({
               <stop offset="50%" stopColor="#eab308" />
               <stop offset="100%" stopColor="#854d0e" />
             </linearGradient>
+
+            {/* Feathered Floor Shadow Radial Gradient */}
+            <radialGradient id="floorShadowGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#000000" stopOpacity="0.45" />
+              <stop offset="65%" stopColor="#000000" stopOpacity="0.2" />
+              <stop offset="100%" stopColor="#000000" stopOpacity="0" />
+            </radialGradient>
           </defs>
 
-          {/* Base Floor Shadow */}
-          <ellipse cx="50" cy="116" rx="36" ry="5.5" fill="#000000" opacity="0.35" />
+          {/* Base Floor Shadow - 100% Round and Feathered */}
+          <ellipse cx="50" cy="116" rx="36" ry="6" fill="url(#floorShadowGrad)" />
 
           {/* Bottom Pedestal Ring (Symmetrical) */}
           <path
