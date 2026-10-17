@@ -4,12 +4,31 @@ class SoundManager {
   private ctx: AudioContext | null = null;
   private enabled: boolean = true;
   private blunderAudio: HTMLAudioElement | null = null;
+  private moveAudios: HTMLAudioElement[] = [];
+  private captureAudio: HTMLAudioElement | null = null;
+  private moveSoundIndex: number = 0;
 
   constructor() {
     if (typeof window !== 'undefined') {
       try {
         this.blunderAudio = new Audio('/sounds/blunder.mp3');
         this.blunderAudio.preload = 'auto';
+
+        this.captureAudio = new Audio('/sounds/capture.mp3');
+        this.captureAudio.preload = 'auto';
+
+        // Natural move variations from user sound pack
+        const movePaths = [
+          '/sounds/move_1.mp3',
+          '/sounds/move_2.mp3',
+          '/sounds/move_3.mp3',
+          '/sounds/move_5.mp3',
+        ];
+        this.moveAudios = movePaths.map((p) => {
+          const a = new Audio(p);
+          a.preload = 'auto';
+          return a;
+        });
       } catch {
         // Ignore pre-load error
       }
@@ -36,57 +55,80 @@ class SoundManager {
     return this.enabled;
   }
 
-  // Standard wooden move click
+  // Authentic move sound from user pack (with subtle natural variations)
   public playMove() {
     if (!this.enabled) return;
-    this.initContext();
-    if (!this.ctx) return;
-
-    const t = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(320, t);
-    osc.frequency.exponentialRampToValueAtTime(110, t + 0.07);
-
-    gain.gain.setValueAtTime(0.45, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start(t);
-    osc.stop(t + 0.08);
-
-    // Subtle wooden thud noise
-    this.playNoise(t, 0.04, 0.2, 500);
+    try {
+      if (this.moveAudios.length > 0) {
+        const audio = this.moveAudios[this.moveSoundIndex % this.moveAudios.length];
+        this.moveSoundIndex = (this.moveSoundIndex + 1) % this.moveAudios.length;
+        audio.currentTime = 0;
+        const p = audio.play();
+        if (p !== undefined) {
+          p.catch(() => {
+            const fallback = new Audio('/sounds/move.mp3');
+            fallback.play().catch(() => {});
+          });
+        }
+        return;
+      }
+      const audio = new Audio('/sounds/move.mp3');
+      audio.play().catch(() => {});
+    } catch {
+      // Fallback synthesizer
+      this.initContext();
+      if (!this.ctx) return;
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(320, t);
+      osc.frequency.exponentialRampToValueAtTime(110, t + 0.07);
+      gain.gain.setValueAtTime(0.45, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.08);
+      this.playNoise(t, 0.04, 0.2, 500);
+    }
   }
 
-  // Heavier capture knock
+  // Authentic capture knock sound from user pack
   public playCapture() {
     if (!this.enabled) return;
-    this.initContext();
-    if (!this.ctx) return;
-
-    const t = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(440, t);
-    osc.frequency.exponentialRampToValueAtTime(80, t + 0.12);
-
-    gain.gain.setValueAtTime(0.7, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.13);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start(t);
-    osc.stop(t + 0.13);
-
-    this.playNoise(t, 0.07, 0.45, 800);
+    try {
+      if (this.captureAudio) {
+        this.captureAudio.currentTime = 0;
+        const p = this.captureAudio.play();
+        if (p !== undefined) {
+          p.catch(() => {
+            const fallback = new Audio('/sounds/capture.mp3');
+            fallback.play().catch(() => {});
+          });
+        }
+        return;
+      }
+      const audio = new Audio('/sounds/capture.mp3');
+      audio.play().catch(() => {});
+    } catch {
+      // Fallback synthesizer
+      this.initContext();
+      if (!this.ctx) return;
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, t);
+      osc.frequency.exponentialRampToValueAtTime(80, t + 0.12);
+      gain.gain.setValueAtTime(0.7, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.13);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.13);
+      this.playNoise(t, 0.07, 0.45, 800);
+    }
   }
 
   // Check alert chime
